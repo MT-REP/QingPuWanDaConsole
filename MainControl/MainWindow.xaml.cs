@@ -138,6 +138,15 @@ namespace MainControl
                         {
                             m_LadderCurStatus[i] = GetLadderStatus(i, m_ConsoleUdp.m_DataFromPlc);
                         }
+                        //for(byte i=0;i<MtUdp.DeviceAmount;i++)
+                        //{
+                        //    for(byte j=0;j<6;j++)
+                        //    {
+                        //        m_ConsoleUdp.m_sToHostBuf[i].motor_code[j] += 1.25f;
+                        //    }
+                            
+                        //    adminLoginWindow.dofInfCollection[i].DataToHostData = m_ConsoleUdp.m_sToHostBuf[i];
+                        //}
                         UpdateUiLadderStatus();
                         if(true==adminLoginWindow.GameStartUpBtnDisplayFlag)
                         {

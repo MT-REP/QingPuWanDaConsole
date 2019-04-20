@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MainControl.MT_UDP;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -26,10 +27,12 @@ namespace MainControl
         private bool[] carDoorShieldCheckFlag = new bool[4] { false, false, false, false };
         private bool[] ladderShieldCheckFlag = new bool[5] { false, false, false, false, false };
         private bool gameStartUpBtnDisplayFlag = false;
+        public DofInfCollection dofInfCollection=new DofInfCollection();
         #endregion
         public AdminLoginWindow()
         {
             InitializeComponent();
+            //dofInfCollection = (DofInfCollection)this.FindResource("DofInfCollectionKey");
         }
 
         public bool[] LadderShieldCheckFlag { get => ladderShieldCheckFlag; set => ladderShieldCheckFlag = value; }
