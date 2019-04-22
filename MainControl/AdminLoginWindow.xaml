@@ -9,46 +9,23 @@
         Title="AdminLoginWindow" Height="630.938" Width="891.25">
     <Window.Resources>
         <local:DofInfCollection x:Key="DofInfCollectionKey"/>
-        <!--<local:DofInfCollection x:Key="MyDataSource"/>-->
 
         <DataTemplate x:Key="DofInfItemDataTemplate">
             <Canvas Width="600" Height="20">
-                <TextBlock FontSize="14" Foreground="DarkSlateGray"
+                <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
           Width="80" Canvas.Left="0" Text="{Binding Path=MotorCode0,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="60" Text="{Binding Path=MotorCode1,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="120" Text="{Binding Path=MotorCode2,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="180" Text="{Binding Path=MotorCode3,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="240" Text="{Binding Path=MotorCode4,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="300" Text="{Binding Path=MotorCode5,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Canvas.Left="80" Text="{Binding Path=MotorCode1,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Canvas.Left="160" Text="{Binding Path=MotorCode2,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Canvas.Left="240" Text="{Binding Path=MotorCode3,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Canvas.Left="320" Text="{Binding Path=MotorCode4,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Canvas.Left="400" Text="{Binding Path=MotorCode5,StringFormat={}{0:N2}}"/>
             </Canvas>
         </DataTemplate>
-        <!--<DataTemplate x:Key="DofInfItemDataTemplate">
-            <Canvas Width="600" Height="300">
-                <TextBlock FontSize="14" Foreground="DarkSlateGray"
-          Width="180" Canvas.Left="0" Text="{Binding Path=MotorCode0,StringFormat={}{0:N2}}"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Text="$" Canvas.Left="180"/>
-                <TextBlock FontSize="14" Foreground="DarkSlateBlue"
-          Width="80" Canvas.Left="190" Text="{Binding Path=MotorCode1,StringFormat={}{0:N2}}"/>
-                --><!--<TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="0" Text="{Binding Path=MotorCode0,StringFormat={}{0:N2}}"/>
-                <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="60" Text="{Binding Path=MotorCode1,StringFormat={}{0:N2}}"/>
-                <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="120" Text="{Binding Path=MotorCode2,StringFormat={}{0:N2}}"/>
-                <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="180" Text="{Binding Path=MotorCode3,StringFormat={}{0:N2}}"/>
-                <TextBox FontSize="11" Foreground="DarkSlateGray"  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="240" Text="{Binding Path=MotorCode4,StringFormat={}{0:N2}}"/>
-                <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
-          Width="60" Canvas.Left="300" Text="{Binding Path=MotorCode5,StringFormat={}{0:N2}}"/>--><!--
-            </Canvas>
-        </DataTemplate>-->
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -68,34 +45,26 @@
         <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" Margin="613.675,435.35,0,0" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click"/>
         <Button x:Name="BtnDisplayGameStartupBtn" Content="显示游戏启动按钮" HorizontalAlignment="Left" Margin="596.8,459.59,0,0" VerticalAlignment="Top" Width="114.6" Click="BtnDisplayGameStartupBtn_Click"/>
         <Label Content="错误代码：" HorizontalAlignment="Left" Margin="105.55,191.892,0,0" VerticalAlignment="Top"/>
-        <DockPanel Height="200" Margin="106,222,391.8,179.6">
-            <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60"  Text="1号驱动器" Margin="0,0,0,176"/>
-            <TextBox FontSize="11" Foreground="DarkSlateGray"  HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60" Text="2号驱动器" Margin="0,0,0,176"/>
-            <TextBox FontSize="11"   Foreground="DarkSlateGray"  HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60" Text="3号驱动器" Margin="0,0,0,176"/>
-            <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60" Text="4号驱动器" Margin="0,0,0,176"/>
-            <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60" Text="5号驱动器" Margin="0,0,0,176"/>
-            <TextBox FontSize="11" Foreground="DarkSlateGray" HorizontalAlignment="Center" VerticalAlignment="Center"
-          Width="60" Text="6号驱动器" Margin="0,0,0,176"/>
-            <ItemsControl Name="MyListBox1" DockPanel.Dock="Top"  Foreground="Silver" Height="136"
+        <DockPanel Margin="159,222,223.8,261.6">
+            <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
+          Width="80"  Text="驱动器1" Height="18" VerticalAlignment="Top"/>
+            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80"  Text="驱动器2" Height="18" VerticalAlignment="Top"/>
+            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Text="驱动器3" Height="18" VerticalAlignment="Top"/>
+            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Text="驱动器4" Height="18" VerticalAlignment="Top"/>
+            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Text="驱动器5" Height="18" VerticalAlignment="Top"/>
+            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+          Width="80" Text="驱动器6" Height="18" VerticalAlignment="Top" />
+            <ItemsControl Name="MyListBox" DockPanel.Dock="Top" Background="Silver" Height="75" 
              ItemsSource="{Binding Source={StaticResource DofInfCollectionKey}}"
-            ItemTemplate="{StaticResource DofInfItemDataTemplate}" Margin="-350,0,10.2,0" HorizontalAlignment="Right" Width="367" RenderTransformOrigin="0.5,0.5"/>
+             ItemTemplate="{StaticResource DofInfItemDataTemplate}" Margin="-480,0,-0.4,0"/>
         </DockPanel>
-         <DockPanel Width="350" Height="150">
-        <TextBlock FontSize="18" Margin="5" FontWeight="Bold" FontFamily="Verdana"
-               DockPanel.Dock="Top">My Auction Tracker</TextBlock>
-            <!--ItemsSource="{Binding Source={StaticResource DofInfCollectionKey}}"
-             ItemTemplate="{StaticResource BidItemDataTemplate}"/>-->
-            <ItemsControl Name="MyListBox" DockPanel.Dock="Top" Background="Silver"
-             Width="315" Height="80"
-                      
-             ItemsSource="{Binding Source={StaticResource DofInfCollectionKey}}"
-             ItemTemplate="{StaticResource DofInfItemDataTemplate}"/>
-             
-    </DockPanel>
+        <Label Content="1号设备" HorizontalAlignment="Left" Margin="101,239,0,0" VerticalAlignment="Top"/>
+        <Label Content="2号设备" HorizontalAlignment="Left" Margin="101,257,0,0" VerticalAlignment="Top"/>
+        <Label Content="3号设备" HorizontalAlignment="Left" Margin="101,275,0,0" VerticalAlignment="Top"/>
+        <Label Content="4号设备" HorizontalAlignment="Left" Margin="101,293,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

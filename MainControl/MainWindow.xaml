@@ -2,8 +2,35 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namspace:MainControl"
-        Title="MOTUS" Height="451.2" Width="706.8" Closed="Window_Closed">
+        Title="MOTUS" Height="481.4" Width="751.6" Closed="Window_Closed">
     <Window.Resources>
+        <!--单控按钮样式--><!--
+        <Style x:Key="Button_SingleControl" TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="7"/>
+            <Setter Property="Width" Value="30"/>
+        </Style>
+        --><!--总控按钮样式--><!--
+        <Style x:Key="Button_MainControl" TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="7"/>
+            <Setter Property="Width" Value="30"/>
+        </Style>
+        --><!--GroupBox名称样式--><!--
+        <Style x:Key="GroupBox" TargetType="{x:Type GroupBox}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight"  Value="Bold"/>
+        </Style>
+        --><!--标题栏名称样式--><!--
+        <Style x:Key="Label_Header" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+
+        --><!--状态显示样式--><!--
+        <Style x:Key="Label_StatusDisplay" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="8"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>-->
         <Style x:Key="ToggleButtonUp_Down" TargetType="{x:Type ToggleButton}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
             <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
@@ -134,59 +161,97 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid HorizontalAlignment="Left" Height="342.081" VerticalAlignment="Top" Width="1123.175" Margin="10,10,0,0">
+    <Grid HorizontalAlignment="Left" Width="697" Margin="0,10,0,15.2">
         <Grid.RowDefinitions>
             <RowDefinition Height="17*"/>
             <RowDefinition Height="1053*"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="平台操作" Height="361.658" Margin="-402.13,10.343,0,-35.355" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1190.598">
-            <Grid Margin="10,10,-2,0">
-                <Label Content="赛车1" HorizontalAlignment="Left" Margin="569.6,38.8,-207.037,0" VerticalAlignment="Top" Width="41.037" Height="25.24"/>
-                <Label Content="赛车2" HorizontalAlignment="Left" Margin="637.6,38.76,-275.037,0" VerticalAlignment="Top" Width="41.037" Height="25.24"/>
-                <Label Content="赛车3" HorizontalAlignment="Left" Margin="709.611,38.8,-347.048,0" VerticalAlignment="Top" Width="41.037" Height="25.24"/>
-                <Label Content="赛车4" HorizontalAlignment="Left" Margin="778.063,38.8,-415.5,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Left" Margin="582.13,64,-194.505,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Left" Margin="650.13,64,-262.505,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Left" Margin="722.1,64,-334.475,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Left" Margin="790.1,64,-402.475,0" VerticalAlignment="Top"/>
-                <Label Content="平台状态：" HorizontalAlignment="Left" Margin="465.966,84.769,-132.366,0" VerticalAlignment="Top"/>
-                <Label x:Name="PF0State" Content="断开" HorizontalAlignment="Left" Margin="576.637,84.098,-207.037,0" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"/>
-                <Label x:Name="PF1State" Content="断开" HorizontalAlignment="Left" Margin="637.6,84.098,-268,0" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"/>
-                <Label x:Name="PF2State" Content="断开" HorizontalAlignment="Left" Margin="716.648,84.098,-347.048,0" VerticalAlignment="Top"/>
-                <Label x:Name="PF3State" Content="断开" HorizontalAlignment="Left" Margin="785.099,84.098,-415.499,0" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"/>
-                <Label Content="车门状态：" HorizontalAlignment="Left" Margin="465.966,119.669,-132.366,0" VerticalAlignment="Top"/>
-                <Label x:Name="Car1DoorState" Content="打开" HorizontalAlignment="Left" Margin="576.637,119.669,-207.037,0" VerticalAlignment="Top"/>
-                <Label x:Name="Car2DoorState" Content="打开" HorizontalAlignment="Left" Margin="637.6,119.669,-268,0" VerticalAlignment="Top"/>
-                <Label x:Name="Car3DoorState" Content="打开" HorizontalAlignment="Left" Margin="716.648,119.669,-347.048,0" VerticalAlignment="Top"/>
-                <Label x:Name="Car4DoorState" Content="打开" HorizontalAlignment="Left" Margin="785.099,119.669,-415.499,0" VerticalAlignment="Top"/>
-                <Label Content="楼梯状态：" HorizontalAlignment="Left" Margin="465.966,197.069,-132.366,0" VerticalAlignment="Top"/>
-                <Label x:Name="Ladder1StatusDisplay" Content="远离" HorizontalAlignment="Left" Margin="542.237,197.069,-172.637,0" VerticalAlignment="Top"/>
-                <Label x:Name="Ladder2StatusDisplay" Content="远离" HorizontalAlignment="Left" Margin="603.2,197.069,-233.6,0" VerticalAlignment="Top"/>
-                <Label x:Name="Ladder3StatusDisplay" Content="远离" HorizontalAlignment="Left" Margin="682.248,197.069,-312.648,0" VerticalAlignment="Top"/>
-                <Label x:Name="Ladder4StatusDisplay" Content="远离" HorizontalAlignment="Left" Margin="750.699,197.069,-381.099,0" VerticalAlignment="Top"/>
-                <Label x:Name="Ladder5StatusDisplay" Content="远离" HorizontalAlignment="Left" Margin="838.699,197.069,-469.099,0" VerticalAlignment="Top"/>
-                <Label Content="车门控制：" HorizontalAlignment="Left" Margin="465.966,158.4,-132.366,0" VerticalAlignment="Top"/>
-                <Label Content="楼梯控制：" HorizontalAlignment="Left" Margin="465.966,244.269,-132.366,0" VerticalAlignment="Top"/>
-                <Button x:Name="BtnStartUpPF1Game" Visibility="Hidden" Content="启动平台1游戏" HorizontalAlignment="Left" Margin="562.2,305.336,-233.6,-34.416" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF1Game_Click"/>
-                <Button x:Name="BtnStartUpPF2Game" Visibility="Hidden" Content="启动平台2游戏" HorizontalAlignment="Left" Margin="663.075,305.336,-334.475,-34.416" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF2Game_Click"/>
-                <Button x:Name="BtnStartUpPF3Game" Visibility="Hidden" Content="启动平台3游戏" HorizontalAlignment="Left" Margin="765.075,310.389,-436.475,-39.47" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF3Game_Click"/>
-                <Button x:Name="BtnStartUpPF4Game" Visibility="Hidden" Content="启动平台4游戏" HorizontalAlignment="Left" Margin="875.475,310.389,-546.875,-39.47" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF4Game_Click"/>
-            </Grid>
+        <GroupBox Header="设备选择" Height="96.166" Margin="45,0.4,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="329" Style="{StaticResource GroupBox}">
+            <Canvas Margin="0,0,375,270.594" HorizontalAlignment="Left" Width="251" >
+                <Label Content="序号" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="赛车1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Grid.Column="1" Canvas.Left="72.512" Canvas.Top="10.76" Style="{StaticResource Label_Header}"/>
+                <Label Content="赛车2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Grid.Column="1" Canvas.Left="121.512" Canvas.Top="10.76" Style="{StaticResource Label_Header}"/>
+                <Label Content="赛车3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Grid.Column="1" Canvas.Left="172" Canvas.Top="10.76" Style="{StaticResource Label_Header}"/>
+                <Label Content="赛车4" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="221.942" Canvas.Top="11.52"  Height="20" Style="{StaticResource Label_Header}"/>
+                <Label Content="状态" FontSize="9" Canvas.Top="33" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="82.025" Canvas.Top="41.76"/>
+                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="132.025" Canvas.Top="41.76"/>
+                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="182" Canvas.Top="41.76"/>
+                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="232.025" Canvas.Top="41.76"/>
+            </Canvas>
         </GroupBox>
-        <Button x:Name="BtnNum1CarDoorControl" Content="解锁" HorizontalAlignment="Left" Margin="186.17,198.35,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum1CarDoorControl_Click"/>
-        <Button x:Name="BtnNum2CarDoorControl" Content="解锁" HorizontalAlignment="Left" Margin="249.526,198.343,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum2CarDoorControl_Click"/>
-        <Button x:Name="BtnNum3CarDoorControl" Content="解锁" HorizontalAlignment="Left" Margin="323.17,198.348,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum3CarDoorControl_Click"/>
-        <Button x:Name="BtnNum4CarDoorControl" Content="解锁" HorizontalAlignment="Left" Margin="391.17,198.347,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum4CarDoorControl_Click"/>
-        <Button x:Name="BtnNum1LadderControl" Content="远离" HorizontalAlignment="Left" Margin="150.17,278.348,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum1LadderControl_Click"/>
-        <Button x:Name="BtnNum2LadderControl" Content="远离" HorizontalAlignment="Left" Margin="213.526,278.337,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum2LadderControl_Click"/>
-        <Button x:Name="BtnNum3LadderControl" Content="远离" HorizontalAlignment="Left" Margin="287.17,278.346,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum3LadderControl_Click"/>
-        <Button x:Name="BtnNum4LadderControl" Content="远离" HorizontalAlignment="Left" Margin="355.17,278.345,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum4LadderControl_Click"/>
-        <Button x:Name="BtnNum5LadderControl" Content="远离" HorizontalAlignment="Left" Margin="446.37,278.344,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50.4" Click="BtnNum5LadderControl_Click"/>
-        <Button x:Name="InitOrWaitPassenger" Content="平台初始化" HorizontalAlignment="Left" Margin="576.97,82.548,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="InitOrWaitPassenger_Click"/>
-        <Button x:Name="ExperienceBegin" Content="游戏体验开始" HorizontalAlignment="Left" Margin="576.97,123.347,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="ExperienceBegin_Click"/>
-        <ToggleButton Content="急停" Margin="564.47,182.779,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
-        <Button x:Name="AdminMode" Content="专家模式" HorizontalAlignment="Right" Margin="0,0,458.705,73.653" Grid.Row="1" Width="100" Click="AdminMode_Click" Height="19.241" VerticalAlignment="Bottom"/>
+        <Button x:Name="InitOrWaitPassenger" Content="平台初始化" HorizontalAlignment="Left" Margin="432,21.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="InitOrWaitPassenger_Click"/>
+        <Button x:Name="ExperienceBegin" Content="游戏体验开始" HorizontalAlignment="Left" Margin="432,62.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="ExperienceBegin_Click"/>
+        <ToggleButton Content="急停" Margin="419,121.6,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <Button x:Name="AdminMode" Content="专家模式" HorizontalAlignment="Left" Margin="419,0,0,256.2" Grid.Row="1" Width="100" Click="AdminMode_Click" Height="19" VerticalAlignment="Bottom"/>
+        <GroupBox Header="平台状态" HorizontalAlignment="Left" Margin="45,101.566,0,0" Grid.Row="1" VerticalAlignment="Top" Height="82.136" Width="329">
+            <Canvas HorizontalAlignment="Left" Margin="0,-6.24,0,4" Width="268.6" >
+                <Label Content="序号" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="平台1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="59.582"  Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="111.068" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="161.388" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="212.288" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="状态" FontSize="9" Canvas.Top="33" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label x:Name="PF0State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="64.576" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
+                <Label x:Name="PF1State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="115.48" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
+                <Label x:Name="PF2State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="165.384" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
+                <Label x:Name="PF3State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"  Canvas.Left="217.288" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
+
+            </Canvas>
+
+        </GroupBox>
+        <GroupBox Header="滑梯相关" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="400,188.6,-32,0" Grid.Row="1" Height="117" Width="329">
+            <Canvas>
+                <Label Content="序号" Canvas.Left="0" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="1号" Canvas.Left="50" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="2号" Canvas.Left="100" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="3号" Canvas.Left="150" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="4号" Canvas.Left="200" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="5号" Canvas.Left="250" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="滑梯&#xD;&#xA;状态：" FontSize="8" FontWeight="Bold" FontStyle="Italic" Canvas.Top="30.79"/>
+                <Label x:Name="Ladder1StatusDisplay" Content="远离" HorizontalAlignment="Left" Canvas.Left="50" Canvas.Top="33.33" FontSize="8" FontStyle="Italic" />
+                <Label x:Name="Ladder2StatusDisplay" Content="远离" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="33.33" FontSize="8" FontStyle="Italic" />
+                <Label x:Name="Ladder3StatusDisplay" Content="远离" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="150" Canvas.Top="33.33" FontSize="8" FontStyle="Italic"/>
+                <Label x:Name="Ladder4StatusDisplay" Content="远离" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="200" Canvas.Top="33.33" FontSize="8" FontStyle="Italic"/>
+                <Label x:Name="Ladder5StatusDisplay" Content="远离" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="250" Canvas.Top="33.33" FontSize="8" FontStyle="Italic"/>
+
+                <Label Content="楼梯&#xD;&#xA;控制：" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="0.583" Canvas.Top="61.124" Width="38.254" FontSize="8" FontWeight="Bold" FontStyle="Italic"/>
+                <Button x:Name="BtnNum1LadderControl" Content="远离" HorizontalAlignment="Left"  Width="30.4" Click="BtnNum1LadderControl_Click" Canvas.Left="49" Canvas.Top="66.664" FontSize="9"/>
+                <Button x:Name="BtnNum2LadderControl" Content="远离" HorizontalAlignment="Left"  Width="30.4" Click="BtnNum2LadderControl_Click" Canvas.Left="99" Canvas.Top="66.664" FontSize="9"/>
+                <Button x:Name="BtnNum3LadderControl" Content="远离" HorizontalAlignment="Left" Width="30.4" Click="BtnNum3LadderControl_Click" Canvas.Left="149" Canvas.Top="66.664" FontSize="9"/>
+                <Button x:Name="BtnNum4LadderControl" Content="远离" HorizontalAlignment="Left" Width="30.4" Click="BtnNum4LadderControl_Click" Canvas.Left="199" Canvas.Top="66.664" FontSize="9"/>
+                <Button x:Name="BtnNum5LadderControl" Content="远离" HorizontalAlignment="Left" Width="30.4" Click="BtnNum5LadderControl_Click" Canvas.Left="249" Canvas.Top="66.664" FontSize="9"/>
+
+                <Button x:Name="BtnStartUpPF1Game" Visibility="Hidden" Content="启动平台1游戏" HorizontalAlignment="Left" Margin="547.583,305,-20.2,0" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF1Game_Click" Grid.Column="1"/>
+                <Button x:Name="BtnStartUpPF2Game" Visibility="Hidden" Content="启动平台2游戏" HorizontalAlignment="Left" Margin="648.583,305,-121.2,0" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF2Game_Click" Grid.Column="1"/>
+                <Button x:Name="BtnStartUpPF3Game" Visibility="Hidden" Content="启动平台3游戏" HorizontalAlignment="Left" Margin="750.583,310,-223.2,-0.8" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF3Game_Click" Grid.Column="1"/>
+                <Button x:Name="BtnStartUpPF4Game" Visibility="Hidden" Content="启动平台4游戏" HorizontalAlignment="Left" Margin="860.583,310,-333.2,-0.8" VerticalAlignment="Top" Width="75" Click="BtnStartUpPF4Game_Click" Grid.Column="1"/>
+
+            </Canvas>
+
+        </GroupBox>
+        <GroupBox Header="车门控制" HorizontalAlignment="Left" Height="117" Margin="45,188.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="329">
+            <Canvas>
+                <Label Content="序号" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="平台1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="70"  Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="122" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="173" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="223" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+
+                <Label Content="车门&#xD;&#xA;状态：" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="30" Canvas.Left="16" Style="{StaticResource Label_Header}"/>
+                <Label x:Name="Car1DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="72" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}" />
+                <Label x:Name="Car2DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="122" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label x:Name="Car3DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="172" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label x:Name="Car4DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="222" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label Content="车门控制：" HorizontalAlignment="Left" Margin="5.583,167,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Button x:Name="BtnNum1CarDoorControl" Content="解锁" Width="30" Click="BtnNum1CarDoorControl_Click" FontSize="9" Canvas.Left="74" Canvas.Top="66"/>
+                <Button x:Name="BtnNum2CarDoorControl" Content="解锁" Width="30" Click="BtnNum2CarDoorControl_Click" FontSize="9" Canvas.Left="124" Canvas.Top="66"/>
+                <Button x:Name="BtnNum3CarDoorControl" Content="解锁" Width="30" Click="BtnNum3CarDoorControl_Click" FontSize="9" Canvas.Left="175" Canvas.Top="66"/>
+                <Button x:Name="BtnNum4CarDoorControl" Content="解锁" Width="30" Click="BtnNum4CarDoorControl_Click" FontSize="9" Canvas.Left="224" Canvas.Top="66"/>
+            </Canvas>
+
+        </GroupBox>
 
     </Grid>
 </Window>

@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Simple Styles.xaml"/>
+                <ResourceDictionary Source="Style/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <!-- 应该在此定义应用程序级的资源。-->
             <Style x:Key="FocusVisual">
