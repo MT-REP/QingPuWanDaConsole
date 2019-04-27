@@ -16,11 +16,20 @@
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight"  Value="Bold"/>
     </Style>
+    <!--GroupBox名称样式-->
+    <Style x:Key="GroupBoxTitle1" TargetType="{x:Type GroupBox}">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight"  Value="Bold"/>
+    </Style>
     <!--标题栏名称样式-->
     <Style x:Key="Label_Header" TargetType="{x:Type Label}">
+        <Setter Property="Height" Value="auto"/>
+        <Setter Property="Width" Value="auto"/>
         <Setter Property="FontSize" Value="9"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontStyle" Value="Italic"/>
+        <Setter Property="HorizontalAlignment"  Value="Center"/>
+        <Setter Property="HorizontalContentAlignment"  Value="Center"/>
     </Style>
 
     <!--状态显示样式-->

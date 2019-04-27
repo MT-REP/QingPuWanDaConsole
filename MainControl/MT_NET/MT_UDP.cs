@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -108,9 +109,10 @@ namespace MainControl.MT_UDP
             try
             {
                 #region /*变量初始化*/
+                AppSettingsReader ar = new AppSettingsReader();
                 for (int i = 0; i < DeviceAmount; i++)
                 {
-                    m_RemoteIpEndpoint[i] = new IPEndPoint(IPAddress.Parse("192.168.0.13" + (i + 1)), 10000);
+                    m_RemoteIpEndpoint[i] = new IPEndPoint(IPAddress.Parse((string)ar.GetValue("GamePC_IP_Num" + (i + 1),typeof(string))), (int)ar.GetValue("GamePC_Port_Num" + (i+1),typeof(int)));
                 }
                 m_sToDOFBuf.DOFs = new float[6];
                 m_sToDOFBuf.Vxyz = new float[3];
@@ -122,7 +124,8 @@ namespace MainControl.MT_UDP
                     m_sToHostBuf[i].motor_code = new float[6];
                 }
                 #endregion
-                m_listener = new UdpClient(udpPort);
+                IPEndPoint localEP= new IPEndPoint(IPAddress.Parse("192.168.0.130"), udpPort);
+                m_listener = new UdpClient(localEP);
                 m_listener.Client.Blocking = true;
                 m_UdpDataProcess = new Thread(UdpDataProcess);
                 m_UdpDataProcess.IsBackground = true;
@@ -182,6 +185,10 @@ namespace MainControl.MT_UDP
         #endregion
 
         #region //寻底，上升至中位
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="endPoint"></param>
         public void DofUpToMedian(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
