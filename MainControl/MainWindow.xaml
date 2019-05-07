@@ -301,5 +301,6 @@
                 </GroupBox>
             </Canvas>
         </GroupBox>
+        <Button x:Name="BtnPJControl" Content="关投影仪" HorizontalAlignment="Left" Margin="432,87.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="BtnPJControl_Click"/>
     </Grid>
 </Window>

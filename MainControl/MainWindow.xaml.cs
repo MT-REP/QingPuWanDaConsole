@@ -102,10 +102,11 @@ namespace MainControl
         private DoorCtrlBtnStatus[] m_DoorCtrlBtnStatus = new DoorCtrlBtnStatus[4] { DoorCtrlBtnStatus.SETIDLE, DoorCtrlBtnStatus.SETIDLE, DoorCtrlBtnStatus.SETIDLE, DoorCtrlBtnStatus.SETIDLE};
         private LadderStatus[] m_LadderCurStatus = new LadderStatus[5] { LadderStatus.MOVING, LadderStatus.MOVING, LadderStatus.MOVING, LadderStatus.MOVING, LadderStatus.MOVING };
         private LadderCtrlBtnStatus[] m_LadderCtrlBtnStatus = new LadderCtrlBtnStatus[5] { LadderCtrlBtnStatus.SETIDLE, LadderCtrlBtnStatus.SETIDLE, LadderCtrlBtnStatus.SETIDLE, LadderCtrlBtnStatus.SETIDLE, LadderCtrlBtnStatus.SETIDLE };
-        private readonly string[] m_PfNetConnectDisplayContent = new string[3] { "连接", "断开","出错" };
+        private readonly string[] m_PfNetConnectDisplayContent = new string[9] { "连接", "断开","出错","待初始化","寻底中","回中位","中位","运行中","底位"};
         private readonly string[] m_CarDoorCtrlBtnContent = new string[2] { "解锁", "锁定" };
         private readonly string[] m_LadderStatusContent = new string[4] { "靠近", "远离","移动中","出错" };
         private string[] m_GameExperienceButtonContent = new string[4] { "启动游戏体验", "体验开始中","结束游戏体验" ,"体验结束中"};
+        private string[] m_PJControlButtonContent = new string[2] { "关投影仪", "开投影仪"};
         private string[] m_InitBtnContent = new string[4] { "启动初始化","初始化过程中", "初始化完成","初始化出错" };
         #endregion
         public MainWindow()
@@ -649,44 +650,69 @@ namespace MainControl
         private void PlcDataHandler()
         {
             #region //急停，运行，关机，复位按钮判断
-            if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 0) & (0x01)))                             //判断急停按钮
+            if (0 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 0) & (0x01)))                             //判断急停按钮
             {
                 //使软件按钮与硬件保持一致
                 //待添加代码
                 for (int i = 0; i < MtUdp.DeviceAmount; i++)
                 {
-                    m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
+                    //m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
                 }
             }
-            else if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))                        //判断运行按钮
+            else if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))                       //改为初始化按钮 //判断运行按钮
             {
                 //使软件按钮与硬件保持一致
-                //待添加代码
-                for (int i = 0; i < MtUdp.DeviceAmount; i++)
+                if (InitOrWaitPassenger.Content.Equals(m_InitBtnContent[1]))
                 {
-                    m_ConsoleUdp.DofToRun(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
+
                 }
+                else if(InitOrWaitPassenger.Content.Equals(m_InitBtnContent[0]))
+                {
+                    InitOrWaitPassenger.Content = m_InitBtnContent[1];
+                    InitOrWaitPassenger.IsEnabled = false;
+                }
+                //待添加代码
+                //for (int i = 0; i < MtUdp.DeviceAmount; i++)
+                //{
+                //    m_ConsoleUdp.DofToRun(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
+                //}
             }
             else if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01)))                 //判断关机按钮
             {
                 //使软件按钮与硬件保持一致
                 //待添加代码
             }
-            else if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 3) & (0x01)))                 //判断复位按钮
+            else if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 3) & (0x01)))                 //改为开始或结束按钮//判断复位按钮
             {
+                if(true==PF_InitOverFlag)
+                {
+                    if (ExperienceBegin.Content.Equals(m_GameExperienceButtonContent[0]))     //当前内容为“启动游戏体验”
+                    {
+                        ExperienceBegin.Content = m_GameExperienceButtonContent[1];              //当前内容为“体验开始中”
+                    }
+                    else if (ExperienceBegin.Content.Equals(m_GameExperienceButtonContent[2])) //当前内容为“结束游戏体验”
+                    {
+                        ExperienceBegin.Content = m_GameExperienceButtonContent[3];            //当前内容为“体验结束中”
+                    }
+                    ExperienceBegin.IsEnabled = false;
+                }
+                else
+                {
+                    MotusMessageBox("平台未初始化！\r\n请先点击初始化按钮！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 //使软件按钮与硬件保持一致
                 //待添加代码
-                for (int i = 0; i < MtUdp.DeviceAmount; i++)
-                {
-                    m_ConsoleUdp.DofToBottom(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
-                }
-                if(((byte)MT_UDP.DOF_state.dof_check_id)==m_ConsoleUdp.m_sToHostBuf[0].nDOFStatus)
-                {
-                    //添加楼梯控制代码
-                    //待添加代码
-                    //m_ConsoleUdp.m_DataToPlc[0]=
-                    //m_ConsoleUdp.SendDataToPlc()
-                }
+                //for (int i = 0; i < MtUdp.DeviceAmount; i++)
+                //{
+                //    m_ConsoleUdp.DofToBottom(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
+                //}
+                //if(((byte)MT_UDP.DOF_state.dof_check_id)==m_ConsoleUdp.m_sToHostBuf[0].nDOFStatus)
+                //{
+                //    //添加楼梯控制代码
+                //    //待添加代码
+                //    //m_ConsoleUdp.m_DataToPlc[0]=
+                //    //m_ConsoleUdp.SendDataToPlc()
+                //}
             } 
             #endregion
 
@@ -699,25 +725,88 @@ namespace MainControl
             {
                 if (true == m_ConsoleUdp.m_DeviceConnectState[i])
                 {
-                    switch (i)
+                    if (119 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
                     {
-                        case 0:
-                            PF0State.Background = Brushes.Green;
-                            PF0State.Content = m_PfNetConnectDisplayContent[0];
-                            break;
-                        case 1:
-                            PF1State.Background = Brushes.Green;
-                            PF1State.Content = m_PfNetConnectDisplayContent[0];
-                            break;
-                        case 2:
-                            PF2State.Background = Brushes.Green;
-                            PF2State.Content = m_PfNetConnectDisplayContent[0];
-                            break;
-                        case 3:
-                            PF3State.Background = Brushes.Green;
-                            PF3State.Content = m_PfNetConnectDisplayContent[0];
-                            break;
+                        switch (i)
+                        {
+                            case 0:
+                                PF0State.Background = Brushes.Red;
+                                PF0State.Content = m_PfNetConnectDisplayContent[2];
+                                break;
+                            case 1:
+                                PF1State.Background = Brushes.Red;
+                                PF1State.Content = m_PfNetConnectDisplayContent[2];
+                                break;
+                            case 2:
+                                PF2State.Background = Brushes.Red;
+                                PF2State.Content = m_PfNetConnectDisplayContent[2];
+                                break;
+                            case 3:
+                                PF3State.Background = Brushes.Red;
+                                PF3State.Content = m_PfNetConnectDisplayContent[2];
+                                break;
+                        }
                     }
+                    else if (55 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    {
+                        if ((true == PF_InitOverFlag) && (true == ((CheckBox)FindName("CbNum" + i + "Platform")).IsChecked))
+                        {
+                            ((Label)FindName("PF" + i + "State")).Background = Brushes.White;
+                            ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[8]; // 在底位
+                        }
+                        else
+                        {
+                            ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
+                            ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[3];
+                        }
+                    }
+                    else if (0 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    {
+
+                        ((Label)FindName("PF" + i + "State")).Background = Brushes.White;
+                        ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[4]; // 在底位
+
+                    }
+                    else if (1 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    {
+
+                        ((Label)FindName("PF" + i + "State")).Background = Brushes.White;
+                        ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[5]; // 在底位
+
+                    }
+                    else if (2 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    {
+
+                        ((Label)FindName("PF" + i + "State")).Background = Brushes.White;
+                        ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[6]; // 在底位
+
+                    }
+                    else if (3 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    {
+
+                        ((Label)FindName("PF" + i + "State")).Background = Brushes.White;
+                        ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[7]; // 在底位
+
+                    }
+                    //switch (i)
+                    //{
+                    //    case 0:
+                    //        PF0State.Background = Brushes.Green;
+                    //        PF0State.Content = m_PfNetConnectDisplayContent[0];
+                    //        break;
+                    //    case 1:
+                    //        PF1State.Background = Brushes.Green;
+                    //        PF1State.Content = m_PfNetConnectDisplayContent[0];
+                    //        break;
+                    //    case 2:
+                    //        PF2State.Background = Brushes.Green;
+                    //        PF2State.Content = m_PfNetConnectDisplayContent[0];
+                    //        break;
+                    //    case 3:
+                    //        PF3State.Background = Brushes.Green;
+                    //        PF3State.Content = m_PfNetConnectDisplayContent[0];
+                    //        break;
+                    //}
 
                 }
                 else if (false == m_ConsoleUdp.m_DeviceConnectState[i])
@@ -742,28 +831,7 @@ namespace MainControl
                             break;
                     }
                 }
-                else if(119==m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            PF0State.Background = Brushes.Red;
-                            PF0State.Content = m_PfNetConnectDisplayContent[2];
-                            break;
-                        case 1:
-                            PF1State.Background = Brushes.Red;
-                            PF1State.Content = m_PfNetConnectDisplayContent[2];
-                            break;
-                        case 2:
-                            PF2State.Background = Brushes.Red;
-                            PF2State.Content = m_PfNetConnectDisplayContent[2];
-                            break;
-                        case 3:
-                            PF3State.Background = Brushes.Red;
-                            PF3State.Content = m_PfNetConnectDisplayContent[2];
-                            break;
-                    }
-                }
+                
             }
         } 
         #endregion
@@ -859,7 +927,7 @@ namespace MainControl
             switch(index)
             {
                 case 0:
-                    if((1==((allStatus[2]>>0)&0x01))||(true==adminLoginWindow.CarDoorShieldCheckFlag[0]))
+                    if((0==((allStatus[2]>>0)&0x01))||(true==adminLoginWindow.CarDoorShieldCheckFlag[0]))
                     {
                         Car1DoorState.Content = m_CarDoorCtrlBtnContent[1];
                         return CarDoorStatus.CLOSED;
@@ -870,7 +938,7 @@ namespace MainControl
                         return CarDoorStatus.OPENED;
                     }
                 case 1:
-                    if ((1 == ((allStatus[2] >> 1) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[1]))
+                    if ((0 == ((allStatus[2] >> 1) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[1]))
                     {
                         Car2DoorState.Content = m_CarDoorCtrlBtnContent[1];
                         return CarDoorStatus.CLOSED;
@@ -881,7 +949,7 @@ namespace MainControl
                         return CarDoorStatus.OPENED;
                     }
                 case 2:
-                    if ((1 == ((allStatus[2] >> 2) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[2]))
+                    if ((0 == ((allStatus[2] >> 2) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[2]))
                     {
                         Car3DoorState.Content = m_CarDoorCtrlBtnContent[1];
                         return CarDoorStatus.CLOSED;
@@ -892,7 +960,7 @@ namespace MainControl
                         return CarDoorStatus.OPENED;
                     }
                 case 3:
-                    if ((1 == ((allStatus[2] >> 3) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[3]))
+                    if ((0 == ((allStatus[2] >> 3) & 0x01))|| (true == adminLoginWindow.CarDoorShieldCheckFlag[3]))
                     {
                         Car4DoorState.Content = m_CarDoorCtrlBtnContent[1];
                         return CarDoorStatus.CLOSED;
@@ -1324,7 +1392,7 @@ namespace MainControl
         }
         #endregion
         #region //楼梯远离平台
-        private const UInt32 LadderAwayMaxDelayCounter = 1000;
+        private const UInt32 LadderAwayMaxDelayCounter = 15000;
         private UInt32[] LadderAwayDelayCounter = new UInt32[5] { 0,0,0,0,0};
         private void ClearLadderAwayDelayCounter(byte index)
         {
@@ -1597,7 +1665,6 @@ namespace MainControl
                 m_LadderCtrlBtnStatus[0] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum1LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(0);
-
             }
             else
             {
@@ -1804,6 +1871,38 @@ namespace MainControl
                 Environment.Exit(0);
             }
             Title = "MOTUS";
+        }
+
+        private void BtnPJControl_Click(object sender, RoutedEventArgs e)
+        {
+            if((sender as Button).Content.Equals(m_PJControlButtonContent[0]))
+            {
+                (sender as Button).Content = m_PJControlButtonContent[1];
+                for (byte i = 0; i < MtUdp.DeviceAmount; i++)
+                {
+                    for (byte j = 0; j < 2; j++)
+                    {
+                        if (true == (FindName("Dev" + (i + 1) + "Projector" + (j + 1)) as CheckBox).IsChecked)
+                        {
+                            pjLinkControl.ProjectorPower(i, j, POWER_STATE.POWER_OFF);
+                        }
+                    }
+                }
+            }
+            else if ((sender as Button).Content.Equals(m_PJControlButtonContent[1]))
+            {
+                (sender as Button).Content = m_PJControlButtonContent[0];
+                for (byte i = 0; i < MtUdp.DeviceAmount; i++)
+                {
+                    for (byte j = 0; j < 2; j++)
+                    {
+                        if (true == (FindName("Dev" + (i + 1) + "Projector" + (j + 1)) as CheckBox).IsChecked)
+                        {
+                            pjLinkControl.ProjectorPower(i, j, POWER_STATE.POWER_OFF);
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -93,7 +93,7 @@ namespace MainControl.MT_UDP
         public DataToHost[] m_sToHostBuf = new DataToHost[deviceAmount];                            //根据外部设备数量定义相应数据结构体
         public IPEndPoint m_CurRomateIpEndPoint = new IPEndPoint(0, 0);
         public IPEndPoint[] m_RemoteIpEndpoint = new IPEndPoint[deviceAmount];                      //根据外部设备数量定义地址数量
-        public IPEndPoint m_PlcIpEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.120"), 10000);
+        public IPEndPoint m_PlcIpEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.120"), 5000);
         IPEndPoint m_LocalIPEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.130"), 10000);
         IPEndPoint m_AnyRemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         public byte[] m_UdpReceiveBuf;
@@ -151,13 +151,13 @@ namespace MainControl.MT_UDP
                 {
                     if (m_AnyRemoteIpEndPoint.Equals(m_RemoteIpEndpoint[i]))
                     {
-                        if(null!=ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost)))
+                        if (null != ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost)))
                         {
                             m_sToHostBuf[i] = (DataToHost)ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost));
                             m_DeviceConnectCheckDelay[i] = 0;
                             m_DeviceConnectState[i] = true;
                         }
-                        
+
                     }
                     else
                     {
@@ -173,12 +173,12 @@ namespace MainControl.MT_UDP
                 }
                 if (m_AnyRemoteIpEndPoint.Equals(m_PlcIpEndpoint))
                 {
-                    if(m_UdpReceiveBuf.Length== m_DataFromPlc.Length)
+                    if (m_UdpReceiveBuf.Length == m_DataFromPlc.Length)
                     {
                         Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
                         //Array.Reverse(m_DataFromPlc);
                     }
-                    
+
                 }
             }
         } 
