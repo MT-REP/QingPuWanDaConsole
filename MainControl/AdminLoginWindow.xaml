@@ -6,7 +6,7 @@
          
         xmlns:local="clr-namespace:MainControl"
         mc:Ignorable="d"
-        Title="AdminLoginWindow" Height="630.938" Width="891.25">
+        Title="AdminLoginWindow" Height="375.738" Width="684.85">
     <Window.Resources>
         <local:DofInfCollection x:Key="DofInfCollectionKey"/>
 
@@ -31,40 +31,49 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Content="屏蔽门检测：" HorizontalAlignment="Left" Margin="105.55,131.412,0,0" VerticalAlignment="Top"/>
-        <Label Content="屏蔽滑梯检测:" HorizontalAlignment="Left" Margin="105.55,161.652,0,0" VerticalAlignment="Top" Width="98"/>
-        <CheckBox x:Name="CbNum0CarDoorShieldCheck" Content="1号车车门" HorizontalAlignment="Left" Margin="225.05,137.412,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum1CarDoorShieldCheck" Content="2号车车门" HorizontalAlignment="Left" Margin="325.05,137.412,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum2CarDoorShieldCheck" Content="3号车车门" HorizontalAlignment="Left" Margin="430.181,137.412,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum3CarDoorShieldCheck" Content="4号车车门" HorizontalAlignment="Left" Margin="528.672,137.412,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum0LadderShieldCheck" Content="1号滑台" HorizontalAlignment="Left" Margin="225.05,167.652,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum1LadderShieldCheck" Content="2号滑台" HorizontalAlignment="Left" Margin="325.05,167.652,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum2LadderShieldCheck" Content="3号滑台" HorizontalAlignment="Left" Margin="430.181,167.652,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum3LadderShieldCheck" Content="4号滑台" HorizontalAlignment="Left" Margin="528.672,167.652,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CbNum4LadderShieldCheck" Content="5号滑台" HorizontalAlignment="Left" Margin="613.672,167.652,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" Margin="613.675,435.35,0,0" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click"/>
-        <Button x:Name="BtnDisplayGameStartupBtn" Content="显示游戏启动按钮" HorizontalAlignment="Left" Margin="596.8,459.59,0,0" VerticalAlignment="Top" Width="114.6" Click="BtnDisplayGameStartupBtn_Click"/>
-        <Label Content="错误代码：" HorizontalAlignment="Left" Margin="105.55,191.892,0,0" VerticalAlignment="Top"/>
-        <DockPanel Margin="159,222,223.8,261.6">
-            <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
+
+        <Button x:Name="BtnDisplayGameStartupBtn" Content="显示游戏启动按钮" HorizontalAlignment="Left" Margin="596.8,459.59,0,0" VerticalAlignment="Top" Width="114.6" Click="BtnDisplayGameStartupBtn_Click" Visibility="Hidden" IsHitTestVisible="False"/>
+        <GroupBox Header="屏蔽勾选" HorizontalAlignment="Left" Height="120" Margin="30,30,0,0" VerticalAlignment="Top" Width="601">
+            <Canvas>
+                <Label Content="门屏蔽选择：" HorizontalContentAlignment="Right" VerticalAlignment="Top" Canvas.Left="15" Canvas.Top="5"/>
+                <Label Content="滑梯屏蔽选择：" HorizontalContentAlignment="Right" VerticalAlignment="Top" Canvas.Top="31" Canvas.Left="2"/>
+                <CheckBox x:Name="CbNum0CarDoorShieldCheck" Content="1号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="10"/>
+                <CheckBox x:Name="CbNum1CarDoorShieldCheck" Content="2号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="200" Canvas.Top="10"/>
+                <CheckBox x:Name="CbNum2CarDoorShieldCheck" Content="3号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="300" Canvas.Top="10"/>
+                <CheckBox x:Name="CbNum3CarDoorShieldCheck" Content="4号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="10"/>
+                <CheckBox x:Name="CbNum0LadderShieldCheck" Content="1号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum1LadderShieldCheck" Content="2号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="200" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum2LadderShieldCheck" Content="3号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="300" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum3LadderShieldCheck" Content="4号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum4LadderShieldCheck" Content="5号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="500" Canvas.Top="36"/>
+                <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click" Canvas.Left="488" Canvas.Top="72"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox Header="错误代码：" HorizontalAlignment="Left" Height="153" Margin="30,166,0,0" VerticalAlignment="Top" Width="601">
+            <Canvas>
+                <DockPanel Height="118" Canvas.Left="80" Canvas.Top="9" Width="502">
+                    <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
           Width="80"  Text="驱动器1" Height="18" VerticalAlignment="Top"/>
-            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80"  Text="驱动器2" Height="18" VerticalAlignment="Top"/>
-            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Text="驱动器3" Height="18" VerticalAlignment="Top"/>
-            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Text="驱动器4" Height="18" VerticalAlignment="Top"/>
-            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Text="驱动器5" Height="18" VerticalAlignment="Top"/>
-            <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Text="驱动器6" Height="18" VerticalAlignment="Top" />
-            <ItemsControl Name="MyListBox" DockPanel.Dock="Top" Background="Silver" Height="75" 
+                    <ItemsControl x:Name="MyListBox" DockPanel.Dock="Top" Background="Silver" Height="75" 
              ItemsSource="{Binding Source={StaticResource DofInfCollectionKey}}"
              ItemTemplate="{StaticResource DofInfItemDataTemplate}" Margin="-480,0,-0.4,0"/>
-        </DockPanel>
-        <Label Content="1号设备" HorizontalAlignment="Left" Margin="101,239,0,0" VerticalAlignment="Top"/>
-        <Label Content="2号设备" HorizontalAlignment="Left" Margin="101,257,0,0" VerticalAlignment="Top"/>
-        <Label Content="3号设备" HorizontalAlignment="Left" Margin="101,275,0,0" VerticalAlignment="Top"/>
-        <Label Content="4号设备" HorizontalAlignment="Left" Margin="101,293,0,0" VerticalAlignment="Top"/>
+                </DockPanel>
+                <Label Content="1号设备" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="22" Canvas.Top="26"/>
+                <Label Content="2号设备" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="22" Canvas.Top="44"/>
+                <Label Content="3号设备" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="22" Canvas.Top="63"/>
+                <Label Content="4号设备" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="22" Canvas.Top="80"/>
+
+            </Canvas>
+        </GroupBox>
     </Grid>
 </Window>

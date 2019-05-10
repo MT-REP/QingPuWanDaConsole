@@ -22,7 +22,7 @@ namespace MainControl
                 _dofInfs[i] = new DofInf();
                 Add(_dofInfs[i]);
             }
-            CreateTimer();
+            //CreateTimer();
         }
 
         private void Timer1_Elapsed(object sender, ElapsedEventArgs e)

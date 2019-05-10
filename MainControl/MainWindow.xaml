@@ -1,46 +1,9 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namspace:MainControl"
-        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Name="window" x:Class="MainControl.MainWindow"
-        Title="MOTUS" Height="481.4" Width="751.6" Closed="Window_Closed">
+    x:Name="window" x:Class="MainControl.MainWindow"
+        Title="MOTUS" Height="481.4" Width="743.2" Closed="Window_Closed">
     <Window.Resources>
-        <!--单控按钮样式-->
-        <!--
-        <Style x:Key="Button_SingleControl" TargetType="{x:Type Button}">
-            <Setter Property="FontSize" Value="7"/>
-            <Setter Property="Width" Value="30"/>
-        </Style>
-        -->
-        <!--总控按钮样式-->
-        <!--
-        <Style x:Key="Button_MainControl" TargetType="{x:Type Button}">
-            <Setter Property="FontSize" Value="7"/>
-            <Setter Property="Width" Value="30"/>
-        </Style>
-        -->
-        <!--GroupBox名称样式-->
-        <!--
-        <Style x:Key="GroupBox" TargetType="{x:Type GroupBox}">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight"  Value="Bold"/>
-        </Style>
-        -->
-        <!--标题栏名称样式-->
-        <!--
-        <Style x:Key="Label_Header" TargetType="{x:Type Label}">
-            <Setter Property="FontSize" Value="9"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontStyle" Value="Italic"/>
-        </Style>
-
-        -->
-        <!--状态显示样式-->
-        <!--
-        <Style x:Key="Label_StatusDisplay" TargetType="{x:Type Label}">
-            <Setter Property="FontSize" Value="8"/>
-            <Setter Property="FontStyle" Value="Italic"/>
-        </Style>-->
         <Style x:Key="ToggleButtonUp_Down" TargetType="{x:Type ToggleButton}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
             <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
@@ -170,47 +133,127 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ButtonStyleCarDoorControl" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="border">
+                                                <EasingDoubleKeyFrame KeyTime="0" Value="0.902"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="border">
+                                                <EasingDoubleKeyFrame KeyTime="0" Value="0.902"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background)" Storyboard.TargetName="border">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource Button.MouseOver.Border}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="border">
+                                                <EasingDoubleKeyFrame KeyTime="0" Value="0.813"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="border">
+                                                <EasingDoubleKeyFrame KeyTime="0" Value="0.813"/>
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background)" Storyboard.TargetName="border">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource Button.Pressed.Background}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Grid Margin="0,10,3.6,15">
+    <Grid Margin="0,10,3.6,10.4">
         <Grid.RowDefinitions>
             <RowDefinition Height="17*"/>
             <RowDefinition Height="1053*"/>
         </Grid.RowDefinitions>
         <GroupBox Header="设备选择" Height="96.166" Margin="45,0.4,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="329" Style="{StaticResource GroupBox}">
             <Canvas Margin="0,0,375,270.594" HorizontalAlignment="Left" Width="251" >
-                <Label Content="序号" FontSize="9" Canvas.Top="11" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="序号：" FontSize="9" Canvas.Top="11" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
                 <Label Content="赛车1" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="73" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
-                <Label Content="赛车2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Grid.Column="1" Canvas.Left="122" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
-                <Label Content="赛车3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Grid.Column="1" Canvas.Left="172" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
-                <Label Content="赛车4" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="222" Canvas.Top="11"  Height="20" Style="{StaticResource Label_Header}"/>
-                <Label Content="状态" FontSize="9" Canvas.Top="39" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
-                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="82" Canvas.Top="42"/>
-                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="132" Canvas.Top="42"/>
-                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="182" Canvas.Top="42"/>
-                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="232" Canvas.Top="42"/>
+                <Label Content="赛车2" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="122" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
+                <Label Content="赛车3" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="172" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
+                <Label Content="赛车4" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="222" Canvas.Top="11" Style="{StaticResource Label_Header}"/>
+                <Label Content="状态：" FontSize="9" Canvas.Top="39" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="82" Canvas.Top="42" ToolTipService.ShowOnDisabled="True"/>
+                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="132" Canvas.Top="42" ToolTipService.ShowOnDisabled="True"/>
+                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="182" Canvas.Top="42" ToolTipService.ShowOnDisabled="True"/>
+                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="232" Canvas.Top="42" ToolTipService.ShowOnDisabled="True"/>
             </Canvas>
         </GroupBox>
-        <Button x:Name="InitOrWaitPassenger" Content="启动初始化" HorizontalAlignment="Left" Margin="432,21.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="InitOrWaitPassenger_Click"/>
-        <Button x:Name="ExperienceBegin" Content="启动游戏体验" HorizontalAlignment="Left" Margin="432,62.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="ExperienceBegin_Click"/>
-        <ToggleButton Content="急停" Margin="419,121.6,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
-        <Button x:Name="AdminMode" Content="专家模式" HorizontalAlignment="Left" Margin="419,0,0,256.2" Grid.Row="1" Width="100" Click="AdminMode_Click" Height="19" VerticalAlignment="Bottom"/>
-        <GroupBox Header="平台状态" HorizontalAlignment="Left" Margin="45,101.566,0,0" Grid.Row="1" VerticalAlignment="Top" Height="82.136" Width="329">
-            <Canvas HorizontalAlignment="Left" Margin="0,-6.24,0,4" Width="268.6" >
-                <Label Content="序号" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
-                <Label Content="平台1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="59"  Canvas.Top="10" Style="{StaticResource Label_Header}" />
-                <Label Content="平台2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="111" Canvas.Top="10" Style="{StaticResource Label_Header}" />
-                <Label Content="平台3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="162" Canvas.Top="10" Style="{StaticResource Label_Header}" />
-                <Label Content="平台4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="41" Height="20" Canvas.Left="212" Canvas.Top="10" Style="{StaticResource Label_Header}" />
-                <Label Content="状态" FontSize="9" Canvas.Top="35" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
-                <Label x:Name="PF0State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="65" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
-                <Label x:Name="PF1State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="115" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
-                <Label x:Name="PF2State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Canvas.Left="166" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
-                <Label x:Name="PF3State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"  Canvas.Left="218" Canvas.Top="35" FontSize="8" FontStyle="Italic"/>
+        <Button x:Name="BtnInitOrWaitPassenger" Content=" 启动&#xD;&#xA;初始化" HorizontalAlignment="Left" Margin="561,9.8,0,0" Grid.Row="1" VerticalAlignment="Top" Width="46" Click="InitOrWaitPassenger_Click" Height="46" FontSize="10"/>
+        <Button x:Name="BtnExperienceControl" Content="   启动&#xD;&#xA;游戏体验" HorizontalAlignment="Left" Margin="617,10.8,0,0" Grid.Row="1" VerticalAlignment="Top" Width="46" Click="ExperienceBegin_Click" Height="46" FontSize="10"/>
+        <ToggleButton x:Name="BtnEmerge" Content="急停未按下" Margin="617,121.379,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" IsHitTestVisible="False"/>
+        <Button x:Name="AdminMode" Content="管理员模式配置" HorizontalAlignment="Left" Margin="617,0,0,256.421" Grid.Row="1" Width="100" Click="AdminMode_Click" Height="19" VerticalAlignment="Bottom"/>
+        <GroupBox Header="平台相关状态" HorizontalAlignment="Left" Margin="45,101.566,0,0" Grid.Row="1" VerticalAlignment="Top" Height="82.136" Width="329" Style="{StaticResource GroupBox}">
+            <Canvas Margin="0,-6,-2.2,-2" >
+                <Label Content="序号：" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="平台1" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="62"  Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台2" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="112" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台3" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="162" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="平台4" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="212" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+                <Label Content="PLC网络" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="262" Canvas.Top="10" Style="{StaticResource Label_Header}" />
+
+                <Label Content="状态：" FontSize="9" Canvas.Top="35" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label x:Name="PF0State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="66" Canvas.Top="35" FontSize="8" FontStyle="Italic" Style="{StaticResource Lable_PfStateDisplay}"/>
+                <Label x:Name="PF1State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="116" Canvas.Top="35" FontSize="8" FontStyle="Italic" Style="{StaticResource Lable_PfStateDisplay}"/>
+                <Label x:Name="PF2State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Canvas.Left="166" Canvas.Top="35" FontSize="8" FontStyle="Italic" Style="{StaticResource Lable_PfStateDisplay}"/>
+                <Label x:Name="PF3State" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"  Canvas.Left="216" Canvas.Top="35" FontSize="8" FontStyle="Italic" Style="{StaticResource Lable_PfStateDisplay}"/>
+                <Label x:Name="PlcState" Content="断开" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E"  Canvas.Left="270" Canvas.Top="35" FontSize="8" FontStyle="Italic" Style="{StaticResource Lable_PfStateDisplay}"/>
             </Canvas>
         </GroupBox>
-        <GroupBox Header="滑梯相关" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="400,188.6,-32,0" Grid.Row="1" Height="117" Width="329">
+        <GroupBox Header="滑梯相关" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="380.657,188.6,0,0" Grid.Row="1" Height="117" Width="328.333" Style="{StaticResource GroupBox}">
             <Canvas>
-                <Label Content="序号" Canvas.Left="0" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
+                <Label Content="序号：" Canvas.Left="0" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
                 <Label Content="1号" Canvas.Left="50" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
                 <Label Content="2号" Canvas.Left="100" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
                 <Label Content="3号" Canvas.Left="150" Canvas.Top="8.09" Style="{StaticResource Label_Header}"/>
@@ -236,64 +279,80 @@
                 <Button x:Name="BtnStartUpPF4Game" Visibility="Hidden" Content="启动平台4游戏" HorizontalAlignment="Left" Margin="860.583,310,-333.2,-0.8" VerticalAlignment="Top" Click="BtnStartUpPF4Game_Click" Grid.Column="1"/>
             </Canvas>
         </GroupBox>
-        <GroupBox Header="车门控制" HorizontalAlignment="Left" Height="117" Margin="45,188.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="329">
+        <GroupBox Header="车门控制" HorizontalAlignment="Left" Height="117" Margin="45,188.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="329" Style="{StaticResource GroupBox}">
             <Canvas>
-                <Label Content="序号" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="序号：" FontSize="9" Canvas.Top="9" Style="{StaticResource Label_Header}" Canvas.Left="16"/>
                 <Label Content="平台1" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="64"  Canvas.Top="10" Style="{StaticResource Label_Header}" />
                 <Label Content="平台2" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="116" Canvas.Top="10" Style="{StaticResource Label_Header}" />
                 <Label Content="平台3" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="167" Canvas.Top="10" Style="{StaticResource Label_Header}" />
                 <Label Content="平台4" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="217" Canvas.Top="10" Style="{StaticResource Label_Header}" />
 
                 <Label Content="车门&#xA;状态：" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="30" Canvas.Left="16" Style="{StaticResource Label_Header}"/>
-                <Label Content="车门&#xA;控制：" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="56" Style="{StaticResource Label_Header}" Canvas.Left="16"/>
-                <Label x:Name="Car1DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="72" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}" />
-                <Label x:Name="Car2DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="122" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
-                <Label x:Name="Car3DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="172" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
-                <Label x:Name="Car4DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="222" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label Content="车锁&#xA;控制：" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="56" Style="{StaticResource Label_Header}" Canvas.Left="16"/>
+                <Label x:Name="Car1DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="67.775" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}" />
+                <Label x:Name="Car2DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="119.775" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label x:Name="Car3DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="170.775" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
+                <Label x:Name="Car4DoorState" Content="打开" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="220.775" Canvas.Top="37" Style="{StaticResource Label_StatusDisplay}"/>
 
-                <Button x:Name="BtnNum1CarDoorControl" Content="解锁" Width="30" Click="BtnNum1CarDoorControl_Click" FontSize="9" Canvas.Left="74" Canvas.Top="66"/>
-                <Button x:Name="BtnNum2CarDoorControl" Content="解锁" Width="30" Click="BtnNum2CarDoorControl_Click" FontSize="9" Canvas.Left="124" Canvas.Top="66"/>
-                <Button x:Name="BtnNum3CarDoorControl" Content="解锁" Width="30" Click="BtnNum3CarDoorControl_Click" FontSize="9" Canvas.Left="175" Canvas.Top="66"/>
-                <Button x:Name="BtnNum4CarDoorControl" Content="解锁" Width="30" Click="BtnNum4CarDoorControl_Click" FontSize="9" Canvas.Left="224" Canvas.Top="66"/>
+                <Button x:Name="BtnNum1CarDoorControl" Content="" Width="30" Click="BtnNum1CarDoorControl_Click" FontSize="9" Canvas.Left="65.775" Canvas.Top="66" ToolTip="锁门/解锁" Style="{DynamicResource ButtonStyleCarDoorControl}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icon/车锁.PNG"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="BtnNum2CarDoorControl" Content="" Width="30" Click="BtnNum2CarDoorControl_Click" FontSize="9" Canvas.Left="117.775" Canvas.Top="66" ToolTip="锁门/解锁" Style="{DynamicResource ButtonStyleCarDoorControl}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icon/车锁.PNG"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="BtnNum3CarDoorControl" Content="" Width="30" Click="BtnNum3CarDoorControl_Click" FontSize="9" Canvas.Left="168.775" Canvas.Top="66" ToolTip="锁门/解锁" Style="{DynamicResource ButtonStyleCarDoorControl}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icon/车锁.PNG"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="BtnNum4CarDoorControl" Content="" Width="30" Click="BtnNum4CarDoorControl_Click" FontSize="9" Canvas.Left="218.775" Canvas.Top="66" ToolTip="锁门/解锁" Style="{DynamicResource ButtonStyleCarDoorControl}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icon/车锁.PNG"/>
+                    </Button.Background>
+                </Button>
             </Canvas>
         </GroupBox>
-        <GroupBox Header="投影仪控制" Style="{StaticResource GroupBox}" Margin="45,310.6,157,10.2" Grid.Row="1">
-            <Canvas>
+        <GroupBox Header="投影仪控制" Style="{StaticResource GroupBox}" Margin="45,310.6,24.21,1.8" Grid.Row="1">
+            <Canvas Margin="0,0,-2,-2.24">
                 <Label Content="序号：" Canvas.Top="13" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
-                <Label Content="控制：" Canvas.Top="39" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
+                <Label Content="控制：" Canvas.Top="43.662" Style="{StaticResource Label_Header}" Canvas.Left="18"/>
                 <GroupBox Header="1号设备" Canvas.Left="131" Height="78" Width="98" Style="{StaticResource GroupBoxTitle1}">
                     <Canvas>
                         <Label Content="投影仪1" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" />
                         <Label Content="投影仪2" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" Canvas.Left="42" />
-                        <CheckBox Name="Dev1Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
-                        <CheckBox Name="Dev1Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
+                        <CheckBox x:Name="Dev1Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
+                        <CheckBox x:Name="Dev1Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
                     </Canvas>
                 </GroupBox>
                 <GroupBox Header="2号设备" Canvas.Left="229" Height="78" Width="98" Style="{StaticResource ResourceKey=GroupBoxTitle1}">
                     <Canvas>
                         <Label Content="投影仪1" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" />
                         <Label Content="投影仪2" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" Canvas.Left="42" />
-                        <CheckBox Name="Dev2Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
-                        <CheckBox Name="Dev2Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
+                        <CheckBox x:Name="Dev2Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
+                        <CheckBox x:Name="Dev2Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
                     </Canvas>
                 </GroupBox>
                 <GroupBox Header="3号设备" Canvas.Left="327" Height="78" Width="98" Style="{StaticResource ResourceKey=GroupBoxTitle1}">
                     <Canvas>
                         <Label Content="投影仪1" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" />
                         <Label Content="投影仪2" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" Canvas.Left="42" />
-                        <CheckBox Name="Dev3Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
-                        <CheckBox Name="Dev3Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
+                        <CheckBox x:Name="Dev3Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
+                        <CheckBox x:Name="Dev3Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
                     </Canvas>
                 </GroupBox>
-                <GroupBox Header="4号设备" Canvas.Left="425" Height="78" Width="98" Style="{StaticResource ResourceKey=GroupBoxTitle1}" Canvas.Top="2">
+                <GroupBox Header="4号设备" Canvas.Left="425" Height="78" Width="98" Style="{StaticResource ResourceKey=GroupBoxTitle1}">
                     <Canvas>
                         <Label Content="投影仪1" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" />
                         <Label Content="投影仪2" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" Canvas.Left="42" />
-                        <CheckBox Name="Dev4Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
-                        <CheckBox Name="Dev4Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
+                        <CheckBox x:Name="Dev4Projector1" IsChecked="True" Canvas.Top="34" Canvas.Left="14"/>
+                        <CheckBox x:Name="Dev4Projector2" IsChecked="True" Canvas.Top="34" Canvas.Left="54"/>
                     </Canvas>
                 </GroupBox>
-                <GroupBox Header="一键控制：" Canvas.Left="54" Height="78" Width="72" Style="{StaticResource GroupBoxTitle1}" Canvas.Top="2">
+                <GroupBox Header="一键控制：" Canvas.Left="54" Height="78" Width="77" Style="{StaticResource GroupBoxTitle1}">
                     <Canvas>
                         <Label Content="已勾选投影" HorizontalAlignment="Left" VerticalAlignment="Top"   Style="{StaticResource Label_Header}" />
                         <ToggleButton x:Name="ProjectorControl" Content="打开" Canvas.Left="15.5" Canvas.Top="31.6" Click="ProjectorControl_Click"/>
@@ -301,6 +360,12 @@
                 </GroupBox>
             </Canvas>
         </GroupBox>
-        <Button x:Name="BtnPJControl" Content="关投影仪" HorizontalAlignment="Left" Margin="432,87.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="BtnPJControl_Click"/>
+        <Button x:Name="BtnPJControl" Content="关投影仪" HorizontalAlignment="Left" Margin="630,87.379,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="BtnPJControl_Click"/>
+        <GroupBox Header="简易操作指引" HorizontalAlignment="Left" Height="96.565" Margin="380.657,0.001,0,0" VerticalAlignment="Top" Width="160" Grid.Row="1" Style="{StaticResource GroupBox}">
+            <Canvas>
+                <TextBox x:Name="TextBoxOperateInstruction" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Height="71.905" Canvas.Left="4" TextWrapping="Wrap" Width="140"/>
+            </Canvas>
+        </GroupBox>
+
     </Grid>
 </Window>

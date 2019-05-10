@@ -37,4 +37,14 @@
         <Setter Property="FontSize" Value="8"/>
         <Setter Property="FontStyle" Value="Italic"/>
     </Style>
+<!--ToolTip显示模板-->
+    <!--解锁门-->
+    <Style x:Key="Button_CarDoorLockControl" TargetType="{x:Type Button}">
+        <Setter Property="ToolTip" Value="锁门或解锁"/>
+        <Setter Property="Width" Value="30"/>
+    </Style>
+    <!--平台状态含义-->
+    <Style x:Key="Lable_PfStateDisplay" TargetType="{x:Type Label}" BasedOn="{StaticResource Label_StatusDisplay}">
+        <Setter Property="ToolTip" Value="断开：表示与设备通信故障"/>
+    </Style>
 </ResourceDictionary>

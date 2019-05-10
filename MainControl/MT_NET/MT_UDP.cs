@@ -100,6 +100,8 @@ namespace MainControl.MT_UDP
         public UdpClient m_listener;
         public Thread m_UdpDataProcess;
 
+        public int m_PLCNetConnectCheckDelay = 0;
+        public string m_PLCConnectState = "断开";
         public byte[] m_DataFromPlc = new byte[8];
         public byte[] m_DataToPlc = new byte[5];
         #endregion
@@ -124,8 +126,8 @@ namespace MainControl.MT_UDP
                     m_sToHostBuf[i].motor_code = new float[6];
                 }
                 #endregion
-                IPEndPoint localEP= new IPEndPoint(IPAddress.Parse("192.168.0.130"), udpPort);
-                m_listener = new UdpClient(localEP);
+                //IPEndPoint localEP= new IPEndPoint(IPAddress.Parse("192.168.0.130"), udpPort);
+                m_listener = new UdpClient(10000); //new UdpClient(localEP);
                 m_listener.Client.Blocking = true;
                 m_UdpDataProcess = new Thread(UdpDataProcess);
                 m_UdpDataProcess.IsBackground = true;
@@ -149,7 +151,7 @@ namespace MainControl.MT_UDP
                 m_UdpReceiveBuf = m_listener.Receive(ref m_AnyRemoteIpEndPoint);
                 for (int i = 0; i < 4; i++)
                 {
-                    if (m_AnyRemoteIpEndPoint.Equals(m_RemoteIpEndpoint[i]))
+                    if ((m_AnyRemoteIpEndPoint.Equals(m_RemoteIpEndpoint[i]))&&(m_UdpReceiveBuf.Length == 76))
                     {
                         if (null != ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost)))
                         {
@@ -161,7 +163,7 @@ namespace MainControl.MT_UDP
                     }
                     else
                     {
-                        if (m_DeviceConnectCheckDelay[i] > 100)
+                        if (m_DeviceConnectCheckDelay[i] > 1000)
                         {
                             m_DeviceConnectState[i] = false;
                         }
@@ -171,14 +173,23 @@ namespace MainControl.MT_UDP
                         }
                     }
                 }
-                if (m_AnyRemoteIpEndPoint.Equals(m_PlcIpEndpoint))
+                if ((m_AnyRemoteIpEndPoint.Equals(m_PlcIpEndpoint))&&(m_UdpReceiveBuf.Length == m_DataFromPlc.Length))
                 {
-                    if (m_UdpReceiveBuf.Length == m_DataFromPlc.Length)
+                    Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
+                    //Array.Reverse(m_DataFromPlc);
+                    m_PLCNetConnectCheckDelay = 0;
+                    m_PLCConnectState = "连接";
+                }
+                else
+                {
+                    if (m_PLCNetConnectCheckDelay > 2000)
                     {
-                        Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
-                        //Array.Reverse(m_DataFromPlc);
+                        m_PLCConnectState = "断开";
                     }
-
+                    else
+                    {
+                        m_PLCNetConnectCheckDelay++;
+                    }
                 }
             }
         } 
