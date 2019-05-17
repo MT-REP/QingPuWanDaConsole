@@ -27,6 +27,7 @@ namespace MainControl
         private bool[] carDoorShieldCheckFlag = new bool[4] { false, false, false, false };
         private bool[] ladderShieldCheckFlag = new bool[5] { false, false, false, false, false };
         private bool gameStartUpBtnDisplayFlag = false;
+        public string[] ForceActiveBtnContent = new string[2] { "强制激活主窗口按钮", "取消强制激活按钮" };
         public DofInfCollection dofInfCollection=new DofInfCollection();
         #endregion
         public AdminLoginWindow()
@@ -131,6 +132,18 @@ namespace MainControl
         private void BtnDisplayGameStartupBtn_Click(object sender, RoutedEventArgs e)
         {
             GameStartUpBtnDisplayFlag = true;
+        }
+
+        private void ActiveMainWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            if((sender as Button).Content.Equals(ForceActiveBtnContent[0]))
+            {
+                (sender as Button).Content = ForceActiveBtnContent[1];
+            }
+            else
+            {
+                (sender as Button).Content = ForceActiveBtnContent[0];
+            }
         }
     }
 }

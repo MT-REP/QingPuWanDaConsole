@@ -101,9 +101,10 @@ namespace MainControl.MT_UDP
         public Thread m_UdpDataProcess;
 
         public int m_PLCNetConnectCheckDelay = 0;
-        public string m_PLCConnectState = "断开";
-        public byte[] m_DataFromPlc = new byte[8];
-        public byte[] m_DataToPlc = new byte[5];
+        public static string[] PlcConnectStateContent = new string[2] { "断开", "连接" };
+        public string m_PLCConnectState = PlcConnectStateContent[0];
+        public byte[] m_DataFromPlc = new byte[8] {0x51,0x15,0x0F,0x00,0x00,0x00,0x00,0x00};
+        public byte[] m_DataToPlc = new byte[5] {0x10,0x00,0x00,0x00,0x00};
         #endregion
         #region //Udp初始化
         public void UdpInit(int udpPort)
@@ -158,6 +159,7 @@ namespace MainControl.MT_UDP
                             m_sToHostBuf[i] = (DataToHost)ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost));
                             m_DeviceConnectCheckDelay[i] = 0;
                             m_DeviceConnectState[i] = true;
+
                         }
 
                     }
@@ -178,13 +180,13 @@ namespace MainControl.MT_UDP
                     Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
                     //Array.Reverse(m_DataFromPlc);
                     m_PLCNetConnectCheckDelay = 0;
-                    m_PLCConnectState = "连接";
+                    m_PLCConnectState = PlcConnectStateContent[1];
                 }
                 else
                 {
                     if (m_PLCNetConnectCheckDelay > 2000)
                     {
-                        m_PLCConnectState = "断开";
+                        m_PLCConnectState = PlcConnectStateContent[0];
                     }
                     else
                     {
@@ -200,7 +202,7 @@ namespace MainControl.MT_UDP
         /// 
         /// </summary>
         /// <param name="endPoint"></param>
-        public void DofUpToMedian(IPEndPoint endPoint)
+        public int DofUpToMedian(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
             m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_Work;
@@ -213,11 +215,11 @@ namespace MainControl.MT_UDP
                 m_sToDOFBuf.Vxyz[i] = 0.0f;
                 m_sToDOFBuf.Axyz[i] = 0.0f;
             }
-            m_listener.Send(StructToBytes(m_sToDOFBuf,Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
+            return SendDataToDof(StructToBytes(m_sToDOFBuf,Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         }
         #endregion
         #region //运行
-        public void DofToRun(IPEndPoint endPoint)
+        public int DofToRun(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
             m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_RUN;
@@ -230,12 +232,12 @@ namespace MainControl.MT_UDP
                 m_sToDOFBuf.Vxyz[i] = 0.0f;
                 m_sToDOFBuf.Axyz[i] = 0.0f;
             }
-            m_listener.Send(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
+            return SendDataToDof(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         } 
         #endregion
         #region //任意姿态到中位
 
-        public void DofToMedain(IPEndPoint endPoint)
+        public int DofToMedain(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
             m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_Back2MID;
@@ -248,12 +250,12 @@ namespace MainControl.MT_UDP
                 m_sToDOFBuf.Vxyz[i] = 0.0f;
                 m_sToDOFBuf.Axyz[i] = 0.0f;
             }
-            m_listener.Send(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
+            return SendDataToDof(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         } 
         #endregion
 
         #region //到底位
-        public void DofToBottom(IPEndPoint endPoint)
+        public int DofToBottom(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
             m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_Stop;
@@ -266,12 +268,12 @@ namespace MainControl.MT_UDP
                 m_sToDOFBuf.Vxyz[i] = 0.0f;
                 m_sToDOFBuf.Axyz[i] = 0.0f;
             }
-            m_listener.Send(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
+            return SendDataToDof(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         } 
         #endregion
 
         #region //急停
-        public void DofToEmergency(IPEndPoint endPoint)
+        public int DofToEmergency(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
             m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_ToMerg;
@@ -284,10 +286,21 @@ namespace MainControl.MT_UDP
                 m_sToDOFBuf.Vxyz[i] = 0.0f;
                 m_sToDOFBuf.Axyz[i] = 0.0f;
             }
-            m_listener.Send(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
+            return SendDataToDof(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         }
         #endregion
-
+        public int SendDataToDof(byte[] dgram, int bytes, IPEndPoint endPoint)
+        {
+            //任意状态下检测到PLC网络断开，则不给平台发数据；
+            if(m_PLCConnectState.Equals(PlcConnectStateContent[1]))
+            {
+                return m_listener.Send(dgram, bytes, endPoint);
+            }
+            else
+            {
+                return -1;
+            }
+        }
         #region //发送数据到PLC
         public void SendDataToPlc(byte[] dgram, int bytes, IPEndPoint endPoint)
         {
