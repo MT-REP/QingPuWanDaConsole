@@ -104,7 +104,7 @@ namespace MainControl.MT_UDP
         public static string[] PlcConnectStateContent = new string[2] { "断开", "连接" };
         public string m_PLCConnectState = PlcConnectStateContent[0];
         public byte[] m_DataFromPlc = new byte[8] {0x51,0x15,0x0F,0x00,0x00,0x00,0x00,0x00};
-        public byte[] m_DataToPlc = new byte[5] {0x10,0x00,0x00,0x00,0x00};
+        public byte[] m_DataToPlc = new byte[5] {0x00,0x00,0x00,0x00,0x00};
         #endregion
         #region //Udp初始化
         public void UdpInit(int udpPort)
@@ -159,7 +159,6 @@ namespace MainControl.MT_UDP
                             m_sToHostBuf[i] = (DataToHost)ByteToStruct(m_UdpReceiveBuf, typeof(DataToHost));
                             m_DeviceConnectCheckDelay[i] = 0;
                             m_DeviceConnectState[i] = true;
-
                         }
 
                     }
@@ -180,6 +179,10 @@ namespace MainControl.MT_UDP
                     Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
                     //Array.Reverse(m_DataFromPlc);
                     m_PLCNetConnectCheckDelay = 0;
+                    if(m_PLCConnectState.Equals(PlcConnectStateContent[0]))
+                    {
+                        PlcDataInit(m_DataFromPlc);
+                    }
                     m_PLCConnectState = PlcConnectStateContent[1];
                 }
                 else
@@ -276,7 +279,7 @@ namespace MainControl.MT_UDP
         public int DofToEmergency(IPEndPoint endPoint)
         {
             m_sToDOFBuf.nCheckID = 55;
-            m_sToDOFBuf.nCmd = (byte)M_nCmd.S_CMD_ToMerg;
+            m_sToDOFBuf.nCmd = 66;          
             m_sToDOFBuf.nAct = 0;
             m_sToDOFBuf.nReserved = 0;
             for (int i = 0; i < 3; i++)
@@ -289,6 +292,29 @@ namespace MainControl.MT_UDP
             return SendDataToDof(StructToBytes(m_sToDOFBuf, Marshal.SizeOf(m_sToDOFBuf)), Marshal.SizeOf(m_sToDOFBuf), endPoint);
         }
         #endregion
+        private void PlcDataInit(byte[] dataFromPlc)
+        {
+            if(1==((dataFromPlc[0]>>4)&0x01))           //1号梯为靠近状态
+            {
+                m_DataToPlc[0] |= 0x01 << 5;
+            }
+            if(1 == ((dataFromPlc[0] >> 6) & 0x01))     //2号梯为靠近状态
+            {
+                m_DataToPlc[0] |= 0x01 << 6;
+            }
+            if (1 == ((dataFromPlc[1] >> 0) & 0x01))    //3号梯为靠近状态
+            {
+                m_DataToPlc[0] |= 0x01 << 7;
+            }
+            if (1 == ((dataFromPlc[1] >> 2) & 0x01))    //4号梯为靠近状态
+            {
+                m_DataToPlc[1] |= 0x01 << 0;
+            }
+            if (1 == ((dataFromPlc[1] >> 4) & 0x01))    //5号梯为靠近状态
+            {
+                m_DataToPlc[1] |= 0x01 << 1;
+            }
+        }
         public int SendDataToDof(byte[] dgram, int bytes, IPEndPoint endPoint)
         {
             //任意状态下检测到PLC网络断开，则不给平台发数据；

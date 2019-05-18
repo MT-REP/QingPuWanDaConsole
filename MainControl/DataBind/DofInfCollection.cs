@@ -11,7 +11,10 @@ namespace MainControl
         //private readonly DofInf _item1 = new DofInf();
         //private readonly DofInf _item2 = new DofInf();
         //private readonly DofInf _item3 = new DofInf();
-        private readonly DofInf[] _dofInfs = new DofInf[4];
+        private DofInf[] _dofInfs = new DofInf[4];
+
+        public DofInf[] DofInfs { get => _dofInfs; set => _dofInfs = value; }
+
         public DofInfCollection()
         {
             //Add(_item1);
@@ -27,13 +30,20 @@ namespace MainControl
 
         private void Timer1_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _dofInfs[0].MotorCode1 += (float) 1.25;
-            _dofInfs[1].MotorCode1 += (float) 2.45;
-            _dofInfs[2].MotorCode1 += (float) 10.55;
+            //_dofInfs[0].Para1 += (float)1.25;
+            //_dofInfs[1].Para1 += (float)2.45;
+            //_dofInfs[2].Para1 += (float)10.55;
 
-            _dofInfs[0].MotorCode2 += 1.0f+(float)1.25;
-            _dofInfs[1].MotorCode2 += 1.0f+(float)2.45;
-            _dofInfs[2].MotorCode2 += 1.0f+(float)10.55;
+            //_dofInfs[0].Para2 += 1.0f + (float)1.25;
+            //_dofInfs[1].Para2 += 1.0f + (float)2.45;
+            //_dofInfs[2].Para2 += 1.0f + (float)10.55;
+            //_dofInfs[0].MotorCode1 += (float) 1.25;
+            //_dofInfs[1].MotorCode1 += (float) 2.45;
+            //_dofInfs[2].MotorCode1 += (float) 10.55;
+
+            //_dofInfs[0].MotorCode2 += 1.0f+(float)1.25;
+            //_dofInfs[1].MotorCode2 += 1.0f+(float)2.45;
+            //_dofInfs[2].MotorCode2 += 1.0f+(float)10.55;
         }
 
         private void CreateTimer()

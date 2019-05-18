@@ -6,13 +6,13 @@
          
         xmlns:local="clr-namespace:MainControl"
         mc:Ignorable="d"
-        Title="AdminLoginWindow" Height="426.138" Width="705.25">
+        Title="AdminLoginWindow" Height="448.538" Width="703.65">
     <Window.Resources>
-        <local:DofInfCollection x:Key="DofInfCollectionKey"/>
+        <local:DofInfCollection x:Key="DofInfCollectionKey" x:Name="dofInfCollection"/>
 
         <DataTemplate x:Key="DofInfItemDataTemplate">
             <Canvas Width="600" Height="20">
-                <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
+                <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Canvas.Left="0" Text="{Binding Path=Para0,StringFormat={}{0:N2}}"/>
                 <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80" Canvas.Left="80" Text="{Binding Path=Para1,StringFormat={}{0:N2}}"/>
@@ -27,7 +27,7 @@
             </Canvas>
         </DataTemplate>
     </Window.Resources>
-    <Grid Margin="0,0,-5.8,-29.2">
+    <Grid Margin="0,0,4.2,10.8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -52,7 +52,7 @@
         <GroupBox Header="错误代码：" HorizontalAlignment="Left" Height="153" Margin="30,234,0,0" VerticalAlignment="Top" Width="601">
             <Canvas>
                 <DockPanel Height="118" Canvas.Left="80" Canvas.Top="9" Width="502">
-                    <TextBlock FontSize="14" Foreground="DarkSlateGray" TextAlignment="Right"
+                    <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80"  Text="驱动器1" Height="18" VerticalAlignment="Top"/>
                     <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
           Width="80"  Text="驱动器2" Height="18" VerticalAlignment="Top"/>
@@ -75,7 +75,7 @@
 
             </Canvas>
         </GroupBox>
-        <GroupBox Header="GroupBox" HorizontalAlignment="Left" Height="74" Margin="30,155,0,0" VerticalAlignment="Top" Width="582">
+        <GroupBox Header="特殊按钮" HorizontalAlignment="Left" Height="74" Margin="30,155,0,0" VerticalAlignment="Top" Width="582">
             <Grid Margin="10,0,-2.4,-0.8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="95*"/>
@@ -85,10 +85,7 @@
                     <ColumnDefinition Width="80*"/>
                     <ColumnDefinition Width="142*"/>
                 </Grid.ColumnDefinitions>
-                <Button Content="Button" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" Width="75" Height="19"/>
-                <Button Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="9.8,15,0,0" VerticalAlignment="Top" Width="75"/>
-                <Button Grid.ColumnSpan="2" Content="Button" Grid.Column="2" HorizontalAlignment="Left" Margin="9.4,15,0,0" VerticalAlignment="Top" Width="75"/>
-                <Button x:Name="ActiveMainWindowButton" Content="强制激活主窗口按钮" HorizontalAlignment="Left" Margin="31.6,20,0,0" VerticalAlignment="Top" Width="75" Click="ActiveMainWindowButton_Click" Grid.Column="5"/>
+                <Button x:Name="ActiveMainWindowButton" Content="强制激活主窗口按钮" HorizontalAlignment="Center" Margin="19.8,23,10.6,10" VerticalAlignment="Center" Click="ActiveMainWindowButton_Click" Grid.Column="5"/>
             </Grid>
         </GroupBox>
     </Grid>

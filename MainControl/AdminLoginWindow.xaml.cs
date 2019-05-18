@@ -28,7 +28,7 @@ namespace MainControl
         private bool[] ladderShieldCheckFlag = new bool[5] { false, false, false, false, false };
         private bool gameStartUpBtnDisplayFlag = false;
         public string[] ForceActiveBtnContent = new string[2] { "强制激活主窗口按钮", "取消强制激活按钮" };
-        public DofInfCollection dofInfCollection=new DofInfCollection();
+        //public DofInfCollection dofInfCollection=new DofInfCollection();
         #endregion
         public AdminLoginWindow()
         {
@@ -144,6 +144,23 @@ namespace MainControl
             {
                 (sender as Button).Content = ForceActiveBtnContent[0];
             }
+        }
+        /// <summary>
+        /// 基于平台返回数据，在管理员窗口显示错误代码
+        /// </summary>
+        /// <param name="dataToHost"></param>
+        public void DisplayErrorCode(DataToHost[] dataToHost)
+        {
+            for (int i = 0; i < dataToHost.Length; i++)
+            {
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para0 = dataToHost[i].para[0];
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para1 = dataToHost[i].para[1];
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para2 = dataToHost[i].para[2];
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para3 = dataToHost[i].para[3];
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para4 = dataToHost[i].para[4];
+                ((DofInfCollection)FindResource("DofInfCollectionKey")).DofInfs[i].Para5 = dataToHost[i].para[5];
+            }
+            
         }
     }
 }

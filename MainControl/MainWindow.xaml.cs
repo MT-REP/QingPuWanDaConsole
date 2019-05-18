@@ -94,7 +94,7 @@ namespace MainControl
         #region //private const variables
         private const int LADDER_AMOUNT = 5;
         #endregion
-        #region /* Private variables ---------------------------------------------------------*/
+        #region //Private variables
         private MtUdp m_ConsoleUdp = new MtUdp();
         private PJLinkControl pjLinkControl = new PJLinkControl();          //投影仪使用PJLink协议操作类
         public AdminLoginWindow adminLoginWindow = new AdminLoginWindow();
@@ -117,7 +117,7 @@ namespace MainControl
         private readonly string[] m_CarDoorLabelDisplayContent = new string[3] { "打开", "关闭", "未知" };
         private readonly string[] m_LadderStatusContent = new string[5] { "靠近", "远离", "移动中", "出错", "未知" };
         private static string[] BtnStartOrEndContent = new string[4] { "   启动\r\n游戏体验", " 体验\r\n开始中", "   结束\r\n游戏体验", " 体验\r\n结束中" };
-        private static string[] BtnResetContent = new string[2] { "复位","复位中" };
+        private static string[] BtnResetContent = new string[2] { "   复位", "复位中" };
         private static string[] m_PJControlButtonContent = new string[2] { "关投影仪", "开投影仪" };
         private static string[] m_InitBtnContent = new string[4] { " 启动\r\n初始化", "初始化\r\n过程中", "初始化\r\n完成", "初始化\r\n出错" };
         #endregion
@@ -146,6 +146,7 @@ namespace MainControl
                 new System.Action(
                     delegate
                     {
+                        adminLoginWindow.DisplayErrorCode(m_ConsoleUdp.m_sToHostBuf);
                         PlatformNetStatusIndicator();
                         CheckPfSelectedStatus();
                         PfBottomStateCheck();
@@ -345,7 +346,7 @@ namespace MainControl
                             {
                                 PF_EnableRunStatusFlag = false;//清零；
                                 BtnStart.Content = BtnStartOrEndContent[0];
-                                BtnEnd.IsEnabled = true;
+                                BtnEnd.IsHitTestVisible = true;
                                 TextBoxOperateInstruction.Text = "体验已开始，待体验结束后，点击“体验结束按钮”";
                             }
                             else if ((PF_EnableRunStatusFlag == true)
@@ -364,6 +365,8 @@ namespace MainControl
                                         if (-1 == m_ConsoleUdp.DofToRun(m_ConsoleUdp.m_RemoteIpEndpoint[i]))
                                         {
                                             MotusMessageBox("PLC断开连接，请检查！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            BtnStart.Content = BtnStartOrEndContent[0];
+                                            BtnStart.IsHitTestVisible = true;
                                         }
                                     }
                                 }
@@ -388,6 +391,7 @@ namespace MainControl
                                     {
                                         MotusMessageBox((i + 1) + "号楼梯运动超时，请检查设备或通过管理员模式屏蔽相应楼梯！并重新点击“体验开始”", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                         BtnStart.Content = BtnStartOrEndContent[0];
+                                        BtnStart.IsHitTestVisible = true;
                                     }
                                 }
                                 m_ConsoleUdp.SendDataToPlc(m_ConsoleUdp.m_DataToPlc, m_ConsoleUdp.m_DataToPlc.Length, m_ConsoleUdp.m_PlcIpEndpoint);
@@ -414,6 +418,8 @@ namespace MainControl
                                         if (-1 == m_ConsoleUdp.DofUpToMedian(m_ConsoleUdp.m_RemoteIpEndpoint[i]))
                                         {
                                             MotusMessageBox("PLC断开连接，请检查！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            BtnStart.Content = BtnStartOrEndContent[0];
+                                            BtnStart.IsHitTestVisible = true;
                                         }
                                     }
                                 }
@@ -438,6 +444,8 @@ namespace MainControl
                                         if (-1 == m_ConsoleUdp.DofToRun(m_ConsoleUdp.m_RemoteIpEndpoint[i]))
                                         {
                                             MotusMessageBox("PLC断开连接，请检查！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            BtnStart.Content = BtnStartOrEndContent[0];
+                                            BtnStart.IsHitTestVisible = true;
                                         }
                                     }
                                 }
@@ -476,10 +484,12 @@ namespace MainControl
                                         if (BtnEnd.Content.Equals(BtnStartOrEndContent[3]))
                                         {
                                             BtnEnd.Content = BtnStartOrEndContent[2];
+                                            BtnEnd.IsHitTestVisible = true;
                                         }
                                         else
                                         {
                                             BtnReset.Content = BtnResetContent[0];
+                                            BtnReset.IsHitTestVisible = true;
                                         }
                                     }
                                 }
@@ -495,8 +505,8 @@ namespace MainControl
                             {
                                 for (int i = 0; i < MtUdp.DeviceAmount; i++)
                                 {
-                                    if (true == Pf_IsCheckedFlag[i])
-                                    {
+                                    //if (true == Pf_IsCheckedFlag[i])
+                                    //{
                                         if (-1 == m_ConsoleUdp.DofToBottom(m_ConsoleUdp.m_RemoteIpEndpoint[i]))
                                         {
                                             MotusMessageBox("PLC断开连接，请检查！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -509,7 +519,7 @@ namespace MainControl
                                                 BtnReset.Content = BtnResetContent[0];
                                             }
                                         }
-                                    }
+                                    //}
                                 }
                             }
                             //如果平台在底位，但是梯子未靠近时，让梯子靠近
@@ -587,7 +597,7 @@ namespace MainControl
                                     else
                                     {
                                         BtnReset.Content = BtnResetContent[0];
-                                        BtnReset.IsEnabled = true;
+                                        BtnReset.IsHitTestVisible = true;
                                     }
                                     EnableBtnStart(true);
                                     SetWaitLight(LightState.ON);
@@ -645,19 +655,26 @@ namespace MainControl
         #region //各状态检测及相关提示
         void DevicesCheckAndBtnEnable()
         {
+            //如果PLC未连接，或无平台可用，或未勾选设备，不使能开始/结束按钮
+            if((Brushes.Red==GbPfsAndPlcStates.BorderBrush)||(Brushes.Red==GbDevicesSelect.BorderBrush))
+            {
+                EnableBtnStart(false);
+                EnableBtnEnd(false);
+            }
             PlcState.Content = m_ConsoleUdp.m_PLCConnectState;
             if (m_ConsoleUdp.m_PLCConnectState.Equals(MtUdp.PlcConnectStateContent[0]))
             {
                 PlcState.Background = Brushes.Red;
-                GbPfsAndPlcStates.BorderBrush = Brushes.Red;
-                //SetBtnEnableStateRelatedToPlc(false);
-                //SetLabelContentWhenPlcDisconnect();
-                TextBoxOperateInstruction.Text = "PLC网络断开，请检修";
+                SetGbBorderColorToRed(GbPfsAndPlcStates);
+                SetBtnEnableStateRelatedToPlc(false);
+                SetLabelContentWhenPlcDisconnect();
+                TextBoxOperateInstruction.Text = "PLC网络断开，主控按钮不可被点击，请检修";
             }
             else
             {
                 PlcState.Background = Brushes.White;
                 LadderStateAndBtnStateUpdate();
+                CarDoorUiUpdate();
                 CarDoorsBtnHandler();
                 LadderBtnHandler();
                 PlcDataHandler();
@@ -671,21 +688,21 @@ namespace MainControl
                     {
                         m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
                     }
-                    BtnEmerge.Content = "急停按钮按下";
+                    BtnEmerge.Content = "急停\r\n按下";
                     BtnEmerge.Background = Brushes.Red;
                     DataClearWhenEmergBtnPressed();
                 }
                 else
                 {
-                    BtnEmerge.Content = "急停按钮未按下";
-                    BtnEmerge.Background = Brushes.Red;
+                    BtnEmerge.Content = "急停\r\n松开";
+                    BtnEmerge.Background = Brushes.White;
                     if ((Brushes.Red == PF0State.Background)
                         && (Brushes.Red == PF1State.Background)
                         && (Brushes.Red == PF2State.Background)
                         && (Brushes.Red == PF3State.Background)
                         )
                     {
-                        GbPfsAndPlcStates.BorderBrush = Brushes.Red;
+                        SetGbBorderColorToRed(GbPfsAndPlcStates);
                         TextBoxOperateInstruction.Text = "无可正常使用平台，请查看设备状态并检修";
                     }
                     else
@@ -697,24 +714,24 @@ namespace MainControl
                             && (true != Pf_IsCheckedFlag[3])
                             )
                         {
-                            GbDevicesSelect.BorderBrush = Brushes.Red;
+                            SetGbBorderColorToRed(GbDevicesSelect);
                             TextBoxOperateInstruction.Text = "请勾选需要使用的设备";
                         }
                         else
                         {
                             RecoveryGbBorderBrushToDefault(GbDevicesSelect);
                             //如果有车门未关闭;则提醒操作员；
-                            if ((CarDoorStatus.CLOSED != GetCarDoorStatus(0, m_ConsoleUdp.m_DataFromPlc))
-                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(1, m_ConsoleUdp.m_DataFromPlc))
-                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(2, m_ConsoleUdp.m_DataFromPlc))
-                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(3, m_ConsoleUdp.m_DataFromPlc))
+                            if ((CarDoorStatus.CLOSED != GetCarDoorStatus(0))
+                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(1))
+                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(2))
+                                || (CarDoorStatus.CLOSED != GetCarDoorStatus(3))
                                 )
                             {
                                 GbCarDoors.BorderBrush = Brushes.Red;
                                 string tString = "请关闭";
                                 for (byte i = 0; i < MtUdp.DeviceAmount; i++)
                                 {
-                                    if (CarDoorStatus.CLOSED != GetCarDoorStatus(i, m_ConsoleUdp.m_DataFromPlc))
+                                    if (CarDoorStatus.CLOSED != GetCarDoorStatus(i))
                                     {
                                         tString += (i + 1) + "号设备  ";
                                     }
@@ -731,11 +748,6 @@ namespace MainControl
                                 {
                                     TextBoxOperateInstruction.Text = "请点击\"启动游戏体验\"按钮,开始游戏体验";
                                     EnableBtnStart(true);
-                                    if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))                       //判断运行按钮
-                                    {
-                                        //使软件按钮与硬件保持一致
-                                        BtnStartOrEnd_Click(BtnStart, null);
-                                    }
                                 }
                                 else
                                 {
@@ -743,17 +755,12 @@ namespace MainControl
                                 }
 
                                 if (BtnEnd.Content.Equals(BtnStartOrEndContent[2])
-                                    &&(true==BtnEnd.IsEnabled)
+                                    //&&(true==BtnEnd.IsHitTestVisible)
                                     && (false == PF_BottomStatusFlag)
                                     )
                                 {
-                                    TextBoxOperateInstruction.Text = "待游戏结束后，请点击\"结束游戏体验\"按钮";
+                                    TextBoxOperateInstruction.Text = "点击\"结束游戏体验\"按钮,设备恢复至待客状态";
                                     EnableBtnEnd(true);
-                                    if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01)))                 //判断关机按钮
-                                    {
-                                        //使软件按钮与硬件保持一致
-                                        BtnStartOrEnd_Click(BtnEnd, null);
-                                    }
                                 }
                                 else
                                 {
@@ -821,23 +828,41 @@ namespace MainControl
         #region //PLC数据处理
         private void PlcDataHandler()
         {
-            if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))                       //判断运行按钮
+            if ((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))&&(BtnStart.Content.Equals(BtnStartOrEndContent[0])))                       //判断运行按钮
             {
-                if (false == BtnStart.IsEnabled)
+                if (false == BtnStart.IsHitTestVisible)
                 {
                     MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                else
+                {
+                    //使软件按钮与硬件保持一致
+                    BtnStartOrEnd_Click(BtnStart, null);
+                }
             }
-            if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01)))                 //判断关机按钮
+            if ((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01))) && (BtnEnd.Content.Equals(BtnStartOrEndContent[2])))                 //判断关机按钮
             {
-                if (false == BtnEnd.IsEnabled)
+                if (false == BtnEnd.IsHitTestVisible)
                 {
                     MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                else
+                {
+                    //使软件按钮与硬件保持一致
+                    BtnStartOrEnd_Click(BtnEnd, null);
+                }
             }
-            if (1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 3) & (0x01)))      //判断复位按钮
+            if ((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 3) & (0x01))) && (BtnReset.Content.Equals(BtnResetContent[0])))      //判断复位按钮
             {
-                BtnReset_Click(BtnReset,null);
+                if (false == BtnReset.IsHitTestVisible)
+                {
+                    MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    BtnReset_Click(BtnReset, null);
+                }
+
             }
         }
         #endregion
@@ -910,6 +935,12 @@ namespace MainControl
                         ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
                         ((Label)FindName("PF" + i + "State")).Content = m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus; // 在错误代码
                     }
+                    if (Brushes.Red == ((Label)FindName("PF" + i + "State")).Background)
+                    {
+                        ((CheckBox)FindName("CbNum" + i + "Platform")).IsChecked = false;
+                        PlatformCheckedEnableControl(i, false);
+                        //((CheckBox)FindName("CbNum" + i + "Platform")).IsEnabled = false;
+                    }
                 }
                 else if (false == m_ConsoleUdp.m_DeviceConnectState[i])
                 {
@@ -925,6 +956,7 @@ namespace MainControl
             }
         }
         #endregion
+        #region //判断平台是否在底位状态；
         /// <summary>
         /// 判断平台是否在底位状态；
         /// </summary>
@@ -943,7 +975,8 @@ namespace MainControl
             {
                 PF_BottomStatusFlag = false;
             }
-        }
+        } 
+        #endregion
         #region //硬件指示灯
         void HardwareErrorCheckAndErrorLightCtrl()
         {
@@ -1084,6 +1117,7 @@ namespace MainControl
         }
 
         #endregion
+        #region //设备与PLC相关的按钮使能状态；如果PLC网络断开需要将所有按钮使能关掉
         /// <summary>
         /// 设备与PLC相关的按钮使能状态；如果PLC网络断开需要将所有按钮使能关掉
         /// </summary>
@@ -1091,9 +1125,9 @@ namespace MainControl
         private void SetBtnEnableStateRelatedToPlc(bool state)
         {
             //主操作按钮
-            BtnStart.IsEnabled = false;
-            BtnEnd.IsEnabled = false;
-            BtnReset.IsEnabled = false;
+            BtnStart.IsHitTestVisible = false;
+            BtnEnd.IsHitTestVisible = false;
+            BtnReset.IsHitTestVisible = false;
             //车门
             for (byte i = 0; i < MtUdp.DeviceAmount; i++)
             {
@@ -1104,6 +1138,8 @@ namespace MainControl
                 SetLadderBtnEnableState(i, state);
             }
         }
+        #endregion
+        #region // 当PLC断开网络连接时，设置相关状态显示信息
         /// <summary>
         /// 当PLC断开网络连接时，设置相关状态显示信息
         /// </summary>
@@ -1119,6 +1155,8 @@ namespace MainControl
                 SetLadderLabel(i, LadderStatus.UNKNOWN);
             }
         }
+        #endregion
+        #region // 设备车门状态显示信息
         /// <summary>
         /// 设备车门状态显示信息
         /// </summary>
@@ -1129,15 +1167,18 @@ namespace MainControl
             ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[(int)carDoorStatus];
             ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.Red;
         }
+        #endregion
+        #region // 设备车门锁按钮是否可以被单击控制
         /// <summary>
-        /// 设备车门锁按钮使能状态
+        /// 设备车门锁按钮是否可以被单击控制
         /// </summary>
         /// <param name="index"></param>
         /// <param name="state"></param>
         private void SetCarLockBtnEnableState(byte index, bool state)
         {
             ((Button)FindName("BtnNum" + (index + 1) + "CarDoorControl")).IsEnabled = state;
-        }
+        } 
+        #endregion
         #region //设置车门控制按钮状态
         private void SetCarDoorBtnDisplayContent(byte index, CarDoorLockStatus carDoorLockStatus)
         {
@@ -1202,61 +1243,68 @@ namespace MainControl
 
         }
         #endregion
+        #region // 车门相关UI更新
+        /// <summary>
+        /// 车门相关UI更新
+        /// </summary>
+        private void CarDoorUiUpdate()
+        {
+            for (byte i = 0; i < MtUdp.DeviceAmount; i++)
+            {
+                if (CarDoorStatus.CLOSED == GetCarDoorStatus(i))
+                {
+                    ((Label)FindName("Car" + (i + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[1];
+                    ((Label)FindName("Car" + (i + 1) + "DoorState")).Background = Brushes.White;
+                    ((Button)FindName("BtnNum" + (i + 1) + "CarDoorControl")).IsEnabled = true;
+                }
+                else if (CarDoorStatus.OPENED == GetCarDoorStatus(i))
+                {
+                    ((Label)FindName("Car" + (i + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[0];
+                    ((Label)FindName("Car" + (i + 1) + "DoorState")).Background = Brushes.Yellow;
+                    ((Button)FindName("BtnNum" + (i + 1) + "CarDoorControl")).IsEnabled = false;
+                }
+            }
+        } 
+        #endregion
         #region //车门状态获取
-        private CarDoorStatus GetCarDoorStatus(byte index, byte[] allStatus)
+        private CarDoorStatus GetCarDoorStatus(byte index)
         {
             switch (index)
             {
                 case 0:
-                    if ((0 == ((allStatus[2] >> 0) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[0]))
+                    if ((0 == ((m_ConsoleUdp.m_DataFromPlc[2] >> 0) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[0]))
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[1];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.White;
                         return CarDoorStatus.CLOSED;
                     }
                     else
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[0];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.Yellow;
                         return CarDoorStatus.OPENED;
                     }
                 case 1:
-                    if ((0 == ((allStatus[2] >> 1) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[1]))
+                    if ((0 == ((m_ConsoleUdp.m_DataFromPlc[2] >> 1) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[1]))
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[1];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.White;
                         return CarDoorStatus.CLOSED;
                     }
                     else
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[0];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.Yellow;
                         return CarDoorStatus.OPENED;
                     }
                 case 2:
-                    if ((0 == ((allStatus[2] >> 2) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[2]))
+                    if ((0 == ((m_ConsoleUdp.m_DataFromPlc[2] >> 2) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[2]))
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[1];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.White;
                         return CarDoorStatus.CLOSED;
                     }
                     else
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[0];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.Yellow;
                         return CarDoorStatus.OPENED;
                     }
                 case 3:
-                    if ((0 == ((allStatus[2] >> 3) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[3]))
+                    if ((0 == ((m_ConsoleUdp.m_DataFromPlc[2] >> 3) & 0x01)) || (true == adminLoginWindow.CarDoorShieldCheckFlag[3]))
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[1];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.White;
                         return CarDoorStatus.CLOSED;
                     }
                     else
                     {
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Content = m_CarDoorLabelDisplayContent[0];
-                        ((Label)FindName("Car" + (index + 1) + "DoorState")).Background = Brushes.Yellow;
                         return CarDoorStatus.OPENED;
                     }
             }
@@ -1407,8 +1455,8 @@ namespace MainControl
                         return LadderStatus.AWAY;
                     }
                     else if ((1 != ((allStatus[0] >> 4) & 0x01)) && (1 != ((allStatus[0] >> 5) & 0x01))
-                        && (LadderAwayDelayCounter[index] <= LadderAwayMaxDelayCounter)
-                        && (LadderClosedDelayCounter[index] <= LadderClosedMaxDelayCounter)
+                        && (LadderAwayDelayCounter[index] < LadderAwayMaxDelayCounter)
+                        && (LadderClosedDelayCounter[index] < LadderClosedMaxDelayCounter)
                         )
                     {
                         return LadderStatus.MOVING;
@@ -1427,8 +1475,8 @@ namespace MainControl
                         return LadderStatus.AWAY;
                     }
                     else if ((1 != ((allStatus[0] >> 6) & 0x01)) && (1 != ((allStatus[0] >> 7) & 0x01))
-                        && (LadderAwayDelayCounter[index] <= LadderAwayMaxDelayCounter)
-                        && (LadderClosedDelayCounter[index] <= LadderClosedMaxDelayCounter)
+                        && (LadderAwayDelayCounter[index] < LadderAwayMaxDelayCounter)
+                        && (LadderClosedDelayCounter[index] < LadderClosedMaxDelayCounter)
                         )
                     {
                         return LadderStatus.MOVING;
@@ -1447,8 +1495,8 @@ namespace MainControl
                         return LadderStatus.AWAY;
                     }
                     else if ((1 != ((allStatus[1] >> 0) & 0x01)) && (1 != ((allStatus[1] >> 1) & 0x01))
-                        && (LadderAwayDelayCounter[index] <= LadderAwayMaxDelayCounter)
-                        && (LadderClosedDelayCounter[index] <= LadderClosedMaxDelayCounter)
+                        && (LadderAwayDelayCounter[index] < LadderAwayMaxDelayCounter)
+                        && (LadderClosedDelayCounter[index] < LadderClosedMaxDelayCounter)
                         )
                     {
                         return LadderStatus.MOVING;
@@ -1467,8 +1515,8 @@ namespace MainControl
                         return LadderStatus.AWAY;
                     }
                     else if ((1 != ((allStatus[1] >> 2) & 0x01)) && (1 != ((allStatus[1] >> 3) & 0x01))
-                        && (LadderAwayDelayCounter[index] <= LadderAwayMaxDelayCounter)
-                        && (LadderClosedDelayCounter[index] <= LadderClosedMaxDelayCounter)
+                        && (LadderAwayDelayCounter[index] < LadderAwayMaxDelayCounter)
+                        && (LadderClosedDelayCounter[index] < LadderClosedMaxDelayCounter)
                         )
                     {
                         return LadderStatus.MOVING;
@@ -1487,8 +1535,8 @@ namespace MainControl
                         return LadderStatus.AWAY;
                     }
                     else if ((1 != ((allStatus[1] >> 4) & 0x01)) && (1 != ((allStatus[1] >> 5) & 0x01))
-                        && (LadderAwayDelayCounter[index] <= LadderAwayMaxDelayCounter)
-                        && (LadderClosedDelayCounter[index] <= LadderClosedMaxDelayCounter)
+                        && (LadderAwayDelayCounter[index] < LadderAwayMaxDelayCounter)
+                        && (LadderClosedDelayCounter[index] < LadderClosedMaxDelayCounter)
                         )
                     {
                         return LadderStatus.MOVING;
@@ -1501,6 +1549,7 @@ namespace MainControl
             return LadderStatus.ERROR;
         }
         #endregion
+        #region //设置楼梯状态显示
         /// <summary>
         /// 设置楼梯状态显示
         /// </summary>
@@ -1534,8 +1583,10 @@ namespace MainControl
             }
             ((Label)FindName("Ladder" + (index + 1) + "StatusDisplay")).Content = m_LadderStatusContent[(int)ldderStatus];
         }
+        #endregion
+        #region //设置楼梯控制按钮能否被单击
         /// <summary>
-        /// 设置楼梯控制按钮使能状态
+        /// 设置楼梯控制按钮能否被单击
         /// </summary>
         /// <param name="index"></param>
         /// <param name="state"></param>
@@ -1543,6 +1594,8 @@ namespace MainControl
         {
             ((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).IsEnabled = state;
         }
+        #endregion
+        #region //根据楼梯状态，确定楼梯按钮显示
         /// <summary>
         /// 设置滑梯按钮相关
         /// </summary>
@@ -1567,7 +1620,8 @@ namespace MainControl
                     ((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).Content = m_LadderStatusContent[0];
                 }
             }
-        }
+        } 
+        #endregion
         #region //楼梯控制按钮处理函数
         private void LadderBtnHandler()
         {
@@ -1610,7 +1664,7 @@ namespace MainControl
         }
         #endregion
         #region //楼梯远离平台
-        private const UInt32 LadderAwayMaxDelayCounter = 15000;
+        private const UInt32 LadderAwayMaxDelayCounter = 1500;
         private UInt32[] LadderAwayDelayCounter = new UInt32[5] { 0,0,0,0,0};
         private void ClearLadderAwayDelayCounter(byte index)
         {
@@ -1694,12 +1748,14 @@ namespace MainControl
         }
         #endregion
         #region //出错弹窗
-        void MotusMessageBox(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
+        private MessageBoxResult MotusMessageBox(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
         {
+            MessageBoxResult mbRet;
             timer.Change(Timeout.Infinite, 10);
             //MessageBox.Show(index + 1 + "号楼梯运动超时，请检查设备！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            MessageBox.Show(messageBoxText, caption, button, icon);
+            mbRet=MessageBox.Show(messageBoxText, caption, button, icon);
             timer.Change(0, 10);
+            return mbRet;
         }
         #endregion
         #region //楼梯靠近平台
@@ -1799,9 +1855,10 @@ namespace MainControl
         private void InitOrWaitPassenger_Click(object sender, RoutedEventArgs e)
         {
             BtnInitOrWaitPassenger.Content = m_InitBtnContent[1];
-            BtnInitOrWaitPassenger.IsEnabled = false;
+            BtnInitOrWaitPassenger.IsHitTestVisible = false;
         }
         #endregion
+        #region //判断强制启动主控按钮功能是否启用
         /// <summary>
         /// 判断是否启用强制启用按钮功能；
         /// </summary>
@@ -1809,10 +1866,11 @@ namespace MainControl
         {
             if (adminLoginWindow.ActiveMainWindowButton.Content.Equals(adminLoginWindow.ForceActiveBtnContent[1]))
             {
-                BtnStart.IsEnabled = true;
-                BtnEnd.IsEnabled = true;
+                BtnStart.IsHitTestVisible = true;
+                BtnEnd.IsHitTestVisible = true;
             }
-        }
+        } 
+        #endregion
         #region //体验开始/结束按钮事件
         private void BtnStartOrEnd_Click(object sender, RoutedEventArgs e)
         {
@@ -1855,25 +1913,28 @@ namespace MainControl
             //EnableBtnStart(false);//BtnStart.IsEnabled = false;
         }
         #endregion
+        #region //开始按钮使能控制函数
         /// <summary>
         /// 开始按钮使能控制
         /// </summary>
         /// <param name="state"></param>
         void EnableBtnStart(bool state)
         {
-            if(adminLoginWindow.ActiveMainWindowButton.Content.Equals(adminLoginWindow.ForceActiveBtnContent[0]))
+            if (adminLoginWindow.ActiveMainWindowButton.Content.Equals(adminLoginWindow.ForceActiveBtnContent[0]))
             {
-                BtnStart.IsEnabled = state;
-                if(true==state)
-                {
-                    BtnEnd.IsEnabled = false;
-                }
+                BtnStart.IsHitTestVisible = state;
+                //if(true==state)
+                //{
+                //    BtnEnd.IsHitTestVisible = false;
+                //}
             }
             else
             {
-                BtnStart.IsEnabled = true;
+                BtnStart.IsHitTestVisible = true;
             }
         }
+        #endregion
+        #region //结束按钮使能控制函数
         /// <summary>
         /// 结束按钮使能控制
         /// </summary>
@@ -1882,21 +1943,23 @@ namespace MainControl
         {
             if (adminLoginWindow.ActiveMainWindowButton.Content.Equals(adminLoginWindow.ForceActiveBtnContent[0]))
             {
-                BtnEnd.IsEnabled = state;
+                BtnEnd.IsHitTestVisible = state;
                 if (true == state)
                 {
-                    BtnStart.IsEnabled = false;
+                    BtnStart.IsHitTestVisible = false;
                 }
             }
             else
             {
-                BtnEnd.IsEnabled = true;
+                BtnEnd.IsHitTestVisible = true;
             }
-        }
+        } 
+        #endregion
         #region //管理员模式按钮事件
         private void AdminMode_Click(object sender, RoutedEventArgs e)
         {
-            adminLoginWindow.ShowDialog();
+            //adminLoginWindow.ShowDialog();
+            adminLoginWindow.Show();
         }
         #endregion
         #region //车门控制按钮事件
@@ -2049,6 +2112,7 @@ namespace MainControl
             }
         }
         #endregion
+        #region //投影仪控制按钮单击事件
         /// <summary>
         /// 投影仪控制按钮
         /// </summary>
@@ -2084,7 +2148,8 @@ namespace MainControl
                     }
                 }
             }
-        }
+        } 
+        #endregion
         #region //游戏启动按钮（测试使用）
         /// <summary>
         /// 根据判断结果确定是否激活游戏启动按钮；（测试使用）
@@ -2157,6 +2222,7 @@ namespace MainControl
             BtnStartUpPF4Game.Visibility = Visibility.Hidden;
         }
         #endregion
+        #region //复位按钮响应函数
         /// <summary>
         /// 复位按钮响应函数
         /// </summary>
@@ -2167,13 +2233,14 @@ namespace MainControl
             if ((sender as Button).Content.Equals(BtnResetContent[0]))
             {
                 BtnStart.Content = BtnStartOrEndContent[0];
-                BtnStart.IsEnabled = false;
+                BtnStart.IsHitTestVisible = false;
                 BtnEnd.Content = BtnStartOrEndContent[2];
-                BtnEnd.IsEnabled = false;
+                BtnEnd.IsHitTestVisible = false;
                 (sender as Button).Content = BtnResetContent[1];
 
             }
-        }
+        } 
+        #endregion
 
         #region //结构体转字节数组
         public byte[] StructToBytes(object structObj, int size)
@@ -2188,6 +2255,8 @@ namespace MainControl
 
         #endregion
 
+        
+
         /// <summary>
         /// 确保单击程序右上角X按钮时程序可以正常退出
         /// </summary>
@@ -2195,6 +2264,10 @@ namespace MainControl
         /// <param name="e"></param>
         private void Window_Closed(object sender, EventArgs e)
         {
+            if(MessageBoxResult.Yes==MotusMessageBox("是否结束运营？\r\n是，则关闭投影仪，滑梯远离，退出程序\r\n否，则仅退出程序", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question))
+            {
+                OperateEndHandle();
+            }
             Application.Current.Shutdown();
         }
         /// <summary>
@@ -2249,10 +2322,8 @@ namespace MainControl
                 SetForegroundWindow(FindWindow(null, "MOTUS"));
                 Environment.Exit(0);
             }
-            Title = "MOTUS";
+            Title = "穆特科技（武汉）股份有限公司）";
         }
-        
-
         /// <summary>
         /// 清空相关数据；
         /// </summary>
@@ -2261,7 +2332,7 @@ namespace MainControl
             BtnStart.Content = BtnStartOrEndContent[0];
             BtnEnd.Content = BtnStartOrEndContent[2];
 
-            BtnInitOrWaitPassenger.IsEnabled = false;
+            BtnInitOrWaitPassenger.IsHitTestVisible = false;
         }
         /// <summary>
         /// 恢复GroupBox边框默认颜色
@@ -2272,6 +2343,42 @@ namespace MainControl
             //将GroupBox边框颜色恢复为默认值
             groupBox.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFD5DFE5"));
         }
+        /// <summary>
+        /// 设置GroupBox边框颜色，具备互锁功能，设置一个颜色后其他的全恢复至默认；
+        /// </summary>
+        /// <param name="groupBox"></param>
+        private void SetGbBorderColorToRed(GroupBox groupBox)
+        {
+            if(groupBox==GbPfsAndPlcStates)
+            {
+                groupBox.BorderBrush = Brushes.Red;
+                RecoveryGbBorderBrushToDefault(GbDevicesSelect);
+            }
+            else if(groupBox == GbDevicesSelect)
+            {
+                groupBox.BorderBrush = Brushes.Red;
+                RecoveryGbBorderBrushToDefault(GbPfsAndPlcStates);
+            }
+        }
 
+        private void OperateEndHandle()
+        {
+            //关闭投影仪
+            for (byte i = 0; i < MtUdp.DeviceAmount; i++)
+            {
+                for (byte j = 0; j < 2; j++)
+                {
+                    pjLinkControl.ProjectorPower(i, j, POWER_STATE.POWER_OFF);
+                }
+            }
+            //滑梯远离
+            for (byte i = 0; i < LadderControllerMounter; i++)
+            {
+                SetLadderAway(i, m_ConsoleUdp.m_DataToPlc);
+                m_ConsoleUdp.SendDataToPlc(m_ConsoleUdp.m_DataToPlc, m_ConsoleUdp.m_DataToPlc.Length, m_ConsoleUdp.m_PlcIpEndpoint);
+            }
+            m_ConsoleUdp.SendDataToPlc(m_ConsoleUdp.m_DataToPlc, m_ConsoleUdp.m_DataToPlc.Length, m_ConsoleUdp.m_PlcIpEndpoint);
+            Thread.Sleep(5000);
+        }
     }
 }
