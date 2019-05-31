@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:MainControl.Style">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--单控按钮样式-->
     <Style x:Key="Button_SingleControl" TargetType="{x:Type Button}">
         <Setter Property="FontSize" Value="14"/>

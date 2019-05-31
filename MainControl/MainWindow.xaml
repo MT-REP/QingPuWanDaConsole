@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="window" 
         x:Class="MainControl.MainWindow"
-        Title="穆特科技（武汉）股份有限公司" Height="831.267" Width="1114.399" Closed="Window_Closed" HorizontalAlignment="Center" VerticalAlignment="Center">
+        Title="穆特科技（武汉）股份有限公司" Height="831.267" Width="1114.399" Closed="Window_Closed" HorizontalAlignment="Center" VerticalAlignment="Center" Loaded="Window_Loaded">
     <Window.Resources>
         <Style x:Key="ToggleButtonUp_Down" TargetType="{x:Type ToggleButton}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -323,10 +323,10 @@
                 <Label Content="赛车3"  Style="{StaticResource Label_Header}" Grid.Column="3" />
                 <Label Content="赛车4"  Style="{StaticResource Label_Header}" Grid.Column="4" />
                 <Label Content="状态：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
-                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="1"/>
-                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="2"/>
-                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="3"/>
-                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="4"/>
+                <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="1" Click="CbPlatformsSelect_Click"/>
+                <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="2" Click="CbPlatformsSelect_Click"/>
+                <CheckBox x:Name="CbNum2Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="3" Click="CbPlatformsSelect_Click"/>
+                <CheckBox x:Name="CbNum3Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="4" Click="CbPlatformsSelect_Click"/>
             </Grid>
         </GroupBox>
         <Button x:Name="BtnInitOrWaitPassenger" Content=" 启动&#xD;&#xA;初始化" Visibility="Hidden" IsHitTestVisible="False" HorizontalAlignment="Left" Margin="1273,21.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="90" Click="InitOrWaitPassenger_Click" Height="80"/>
@@ -382,6 +382,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -398,12 +399,18 @@
                 <Label Content="平台4"  Style="{StaticResource Label_Header}" Grid.Column="4" />
                 <Label Content="PLC网络" Style="{StaticResource Label_Header}" Grid.Column="5" />
 
-                <Label Content="状态：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
+                <Label Content="平台：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
                 <Label x:Name="PF0State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" FontWeight="Normal" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PF1State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PF2State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PF3State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PlcState" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
+                
+                <Label Content="游戏：" Style="{StaticResource Label_Header}" Grid.Row="2" Margin="0"/>
+                <Label x:Name="PF1GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
+                <Label x:Name="PF2GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
+                <Label x:Name="PF3GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
+                <Label x:Name="PF4GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="滑梯相关" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="567,274.4,0,0" Grid.Row="1" Height="203" Width="506" Style="{StaticResource GroupBox}">
@@ -474,10 +481,9 @@
                 <Button x:Name="BtnStartUpPF4Game" Visibility="Hidden" Content="启动平台4游戏" HorizontalAlignment="Left" Margin="860.583,310,-333.2,-0.8" VerticalAlignment="Top" Click="BtnStartUpPF4Game_Click" Grid.Column="1"/>
             </Canvas>-->
         </GroupBox>
-        <GroupBox Name="GbCarDoors" Header="车门控制" HorizontalAlignment="Left" Height="203" Margin="45,274.4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="517" Style="{StaticResource GroupBox}">
+        <GroupBox Name="GbCarDoors" Header="车门相关" HorizontalAlignment="Left" Height="143" Margin="45,279.2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="517" Style="{StaticResource GroupBox}">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -495,22 +501,22 @@
                 <Label Content="平台4" Style="{StaticResource Label_Header}" Grid.Column="4"/>
 
                 <Label Content="车门&#xA;状态：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
-                <Label Content="车锁&#xA;控制：" Style="{StaticResource Label_Header}" Grid.Row="2"/>
+                <Label Content="车锁&#xA;控制："  Visibility="Hidden" IsHitTestVisible="False" Style="{StaticResource Label_Header}" Grid.Row="2"/>
                 <Label x:Name="Car1DoorState" Content="打开" Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}" />
                 <Label x:Name="Car2DoorState" Content="打开" Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="Car3DoorState" Content="打开" Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="Car4DoorState" Content="打开" Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
 
-                <Button x:Name="BtnNum1CarDoorControl" Click="BtnNum1CarDoorControl_Click" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="1" Margin="10">
+                <Button x:Name="BtnNum1CarDoorControl" Click="BtnNum1CarDoorControl_Click" Visibility="Hidden" IsHitTestVisible="False" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="1" Margin="10">
                     <Image Source="Icon/车锁.PNG"/>
                 </Button>
-                <Button x:Name="BtnNum2CarDoorControl" Click="BtnNum2CarDoorControl_Click" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="2" Margin="10">
+                <Button x:Name="BtnNum2CarDoorControl" Click="BtnNum2CarDoorControl_Click"  Visibility="Hidden" IsHitTestVisible="False" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="2" Margin="10">
                     <Image Source="Icon/车锁.PNG"/>
                 </Button>
-                <Button x:Name="BtnNum3CarDoorControl" Click="BtnNum3CarDoorControl_Click" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="3" Margin="10">
+                <Button x:Name="BtnNum3CarDoorControl" Click="BtnNum3CarDoorControl_Click"  Visibility="Hidden" IsHitTestVisible="False" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="3" Margin="10">
                     <Image Source="Icon/车锁.PNG"/>
                 </Button>
-                <Button x:Name="BtnNum4CarDoorControl" Click="BtnNum4CarDoorControl_Click" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="4" Margin="10">
+                <Button x:Name="BtnNum4CarDoorControl" Click="BtnNum4CarDoorControl_Click"  Visibility="Hidden" IsHitTestVisible="False" Style="{DynamicResource ButtonStyleCarDoorControl}" Grid.Row="2" Grid.Column="4" Margin="10">
                     <Image Source="Icon/车锁.PNG"/>
                 </Button>
             </Grid>

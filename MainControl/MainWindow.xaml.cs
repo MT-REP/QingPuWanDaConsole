@@ -23,6 +23,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using static MainControl.MT_NET.PJLinkControl;
 using System.Configuration;
+using MainControl.Properties;
+using System.IO;
+using System.Windows.Interop;
 
 namespace MainControl
 {
@@ -79,7 +82,18 @@ namespace MainControl
         ERROR = 3,
         UNKNOWN =4,          //PLC网络处于断开状态
     }
-
+    public enum RaceState:byte
+    {
+            RACESTATE_INVALID,
+            RACESTATE_NOT_STARTED,
+            RACESTATE_RACING,
+            RACESTATE_FINISHED,
+            RACESTATE_DISQUALIFIED,
+            RACESTATE_RETIRED,
+            RACESTATE_DNF,
+            //-------------
+            RACESTATE_MAX
+        };
     #endregion/* Exported types ------------------------------------------------------------*/
 
     public partial class MainWindow : Window
@@ -95,6 +109,9 @@ namespace MainControl
         private const int LADDER_AMOUNT = 5;
         #endregion
         #region //Private variables
+        private const int WM_QUERYENDSESSION = 0x0011;
+
+        private readonly DateTime m_EndTime = new DateTime(2099, 5, 25, 0, 0, 0);
         private MtUdp m_ConsoleUdp = new MtUdp();
         private PJLinkControl pjLinkControl = new PJLinkControl();          //投影仪使用PJLink协议操作类
         public AdminLoginWindow adminLoginWindow = new AdminLoginWindow();
@@ -120,16 +137,62 @@ namespace MainControl
         private static string[] BtnResetContent = new string[2] { "   复位", "复位中" };
         private static string[] m_PJControlButtonContent = new string[2] { "关投影仪", "开投影仪" };
         private static string[] m_InitBtnContent = new string[4] { " 启动\r\n初始化", "初始化\r\n过程中", "初始化\r\n完成", "初始化\r\n出错" };
+
+        private bool m_RaceFinishedFlag = false;
+        private bool m_ActiveAutoEnd = false;
+
+        StreamWriter m_LogWriter;
+        string m_LogLastEventContent="";
+        string m_LogLastButtonEventContent = "";
+        string[] m_LogLastPfErrorContent = new string[4] { "", "", "", "" };
+        string[] m_LogLastCarDoorState = new string[4] { "", "", "", "" };
+        string[] m_LogLastGameState = new string[4] { "", "", "", "" };
         #endregion
         public MainWindow()
         {
             InitializeComponent();
             //进程锁
             EnsureOnlyOneProgressRun();
+
+            m_LogWriter = new StreamWriter(System.AppDomain.CurrentDomain.BaseDirectory+"//Log//"+DateTime.Now.ToString("yyyy_MM_dd_hh_mm_ss")+".log");
+            m_LogWriter.AutoFlush = true;
+            //试用设备时间是否结束
+            DateTime curTime = DateTime.Now;
+            if(curTime> new DateTime((long)(new AppSettingsReader()).GetValue("SNC", typeof(long))))
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings["SNC"].Value = curTime.Ticks.ToString();
+                config.Save();
+                if (curTime>m_EndTime)
+                {
+                    MessageBox.Show("程序内部逻辑出现问题，请联系供应商");
+                    Application.Current.Shutdown();
+                }
+            }
+            else
+            {
+                MessageBox.Show("程序内部逻辑出现问题，请联系供应商");
+                Application.Current.Shutdown();
+            }
+
             //打开投影仪
             if (true == (bool)(new AppSettingsReader()).GetValue("PjAutoControlIsEnable", typeof(bool)))
             {
                 CheckedProjectorOperate(POWER_STATE.POWER_ON);
+            }
+            //滑梯初始屏蔽？
+            for(byte i=0;i<LADDER_AMOUNT;i++)
+            {
+                if (true == (bool)(new AppSettingsReader()).GetValue("Ladder"+(i+1)+"ShieldEnable", typeof(bool)))
+                {
+                    (adminLoginWindow.FindName("CbNum" + i + "LadderShieldCheck") as CheckBox).IsChecked = true;
+                    adminLoginWindow.LadderShieldCheckFlag[i] = true;
+                }
+                else
+                {
+                    (adminLoginWindow.FindName("CbNum" + i + "LadderShieldCheck") as CheckBox).IsChecked = false;
+                    adminLoginWindow.LadderShieldCheckFlag[i] = false;
+                }
             }
             //本地网络初始化
             m_ConsoleUdp.UdpInit(m_LocalUdpPort);
@@ -147,6 +210,7 @@ namespace MainControl
                     delegate
                     {
                         adminLoginWindow.DisplayErrorCode(m_ConsoleUdp.m_sToHostBuf);
+                        GameStateUiUpdate();
                         PlatformNetStatusIndicator();
                         CheckPfSelectedStatus();
                         PfBottomStateCheck();
@@ -669,6 +733,7 @@ namespace MainControl
                 SetBtnEnableStateRelatedToPlc(false);
                 SetLabelContentWhenPlcDisconnect();
                 TextBoxOperateInstruction.Text = "PLC网络断开，主控按钮不可被点击，请检修";
+                WriteEventContentToLog(TextBoxOperateInstruction.Text);
             }
             else
             {
@@ -682,6 +747,7 @@ namespace MainControl
                 if (0 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 0) & (0x01)))                             //判断急停按钮
                 {
                     TextBoxOperateInstruction.Text = "急停按钮被按下";
+                    WriteEventContentToLog(TextBoxOperateInstruction.Text);
                     //仅使用硬件按钮，软件按钮仅作为指示灯
                     //发送急停指令，但平台操作程序接收急停指令后，并不进行数据发送保持在当前位置
                     for (int i = 0; i < MtUdp.DeviceAmount; i++)
@@ -696,6 +762,17 @@ namespace MainControl
                 {
                     BtnEmerge.Content = "急停\r\n松开";
                     BtnEmerge.Background = Brushes.White;
+                    for(byte i=0;i<MtUdp.DeviceAmount;i++)
+                    {
+                        if((Brushes.Red == (FindName("PF"+i+"State") as Label).Background)
+                            &&(BtnStart.Content.Equals(BtnStartOrEndContent[0]))
+                            && (BtnEnd.Content.Equals(BtnStartOrEndContent[2]))
+                            && (BtnReset.Content.Equals(BtnResetContent[0]))
+                            )
+                        {
+                            m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
+                        }
+                    }
                     if ((Brushes.Red == PF0State.Background)
                         && (Brushes.Red == PF1State.Background)
                         && (Brushes.Red == PF2State.Background)
@@ -727,12 +804,15 @@ namespace MainControl
                                 || (CarDoorStatus.CLOSED != GetCarDoorStatus(3))
                                 )
                             {
+                                EnableBtnStart(false);
+                                BtnStart.Content = BtnStartOrEndContent[0];
                                 GbCarDoors.BorderBrush = Brushes.Red;
                                 string tString = "请关闭";
                                 for (byte i = 0; i < MtUdp.DeviceAmount; i++)
                                 {
                                     if (CarDoorStatus.CLOSED != GetCarDoorStatus(i))
                                     {
+                                        m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
                                         tString += (i + 1) + "号设备  ";
                                     }
                                 }
@@ -742,6 +822,7 @@ namespace MainControl
                             else
                             {
                                 RecoveryGbBorderBrushToDefault(GbCarDoors);
+                                IsActiveAutoEnd();  //判断是否激活自动结束体验
                                 if (BtnStart.Content.Equals(BtnStartOrEndContent[0])
                                     && (true == PF_BottomStatusFlag)
                                     )
@@ -828,11 +909,14 @@ namespace MainControl
         #region //PLC数据处理
         private void PlcDataHandler()
         {
+            m_ConsoleUdp.PlcNetDelayCounter();
             if ((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)))&&(BtnStart.Content.Equals(BtnStartOrEndContent[0])))                       //判断运行按钮
             {
                 if (false == BtnStart.IsHitTestVisible)
                 {
-                    MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MotusMessageBox("操作错误！请查看操作指引\r\n开始按钮：" + ((m_ConsoleUdp.m_DataFromPlc[0] >> 1) & (0x01)).ToString()
+                        + "\r\nBtnStart.IsHitTestVisible："+ BtnStart.IsHitTestVisible.ToString()
+                        , "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -840,11 +924,15 @@ namespace MainControl
                     BtnStartOrEnd_Click(BtnStart, null);
                 }
             }
-            if ((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01))) && (BtnEnd.Content.Equals(BtnStartOrEndContent[2])))                 //判断关机按钮
+            if (((1 == ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01)))||(true==m_ActiveAutoEnd)) && (BtnEnd.Content.Equals(BtnStartOrEndContent[2])))                 //判断关机按钮
             {
+                m_ActiveAutoEnd = false;
                 if (false == BtnEnd.IsHitTestVisible)
                 {
-                    MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MotusMessageBox("操作错误！请查看操作指引\r\n 停止按钮："+ ((m_ConsoleUdp.m_DataFromPlc[0] >> 2) & (0x01)).ToString()
+                        + "\r\nm_ActiveAutoEnd："+ m_ActiveAutoEnd.ToString()
+                        + "\r\nBtnEnd.IsHitTestVisible:"+ BtnEnd.IsHitTestVisible.ToString()
+                        , "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -856,7 +944,9 @@ namespace MainControl
             {
                 if (false == BtnReset.IsHitTestVisible)
                 {
-                    MotusMessageBox("操作错误！\r\n请查看操作指引", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MotusMessageBox("操作错误！请查看操作指引\r\n复位按钮：" + ((m_ConsoleUdp.m_DataFromPlc[0] >> 3) & (0x01)).ToString()
+                         + "\r\nBtnReset.IsHitTestVisible：" + BtnReset.IsHitTestVisible.ToString()
+                        , "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -866,6 +956,7 @@ namespace MainControl
             }
         }
         #endregion
+
         #region //指示平台网络连接状态
         private void PlatformNetStatusIndicator()
         {
@@ -873,21 +964,36 @@ namespace MainControl
             {
                 if (true == m_ConsoleUdp.m_DeviceConnectState[i])
                 {
+                    m_ConsoleUdp.PfNetDelayCounter(i);
                     if (false == PF_InitOverFlag)
                     {
                         PlatformCheckedEnableControl(i, true);
                     }
-                    if (119 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
-                    {
-                        ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
-                        ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[2];
-                        ((Label)FindName("PF" + i + "State")).ToolTip = "设备中有驱动器报错；请点击管理员按钮查看对应设备的错误代码";
-                    }
-                    else if (118 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                    if (118 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
                     {
                         ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
                         ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[9];
                         ((Label)FindName("PF" + i + "State")).ToolTip = (i + 1) + "号平台网络断开，请检查网络连接；";
+                    }
+                    else if ((119 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[0])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[1])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[2])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[3])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[4])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[5])
+                        )
+                    {
+                        if(119 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                        {
+                            ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[2];
+                        }
+                        else
+                        {
+                            ((Label)FindName("PF" + i + "State")).Content = m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus;
+                        }
+                        ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
+                        ((Label)FindName("PF" + i + "State")).ToolTip = "设备中有驱动器报错；请点击管理员按钮查看对应设备的错误代码";
                     }
                     else if (55 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
                     {
@@ -947,12 +1053,31 @@ namespace MainControl
                     //使平台不可勾选，且取消勾选；
                     ((CheckBox)FindName("CbNum" + i + "Platform")).IsChecked = false;
                     PlatformCheckedEnableControl(i, false);
-
+                    m_ConsoleUdp.m_sToHostBuf[i].nRev1 = 0;
 
                     ((Label)FindName("PF" + i + "State")).Background = Brushes.Red;
                     ((Label)FindName("PF" + i + "State")).Content = m_PfNetConnectDisplayContent[1];
                 }
-
+                if ((119 == m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus)
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[0])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[1])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[2])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[3])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[4])
+                        || (0.01 < m_ConsoleUdp.m_sToHostBuf[i].para[5])
+                        )
+                {
+                    WritePfErrorContentToLog(i,((Label)FindName("PF" + i + "State")).Content.ToString()+"，错误代码:"
+                        + (int)m_ConsoleUdp.m_sToHostBuf[i].nDOFStatus + ";Para代码："
+                        + (int)m_ConsoleUdp.m_sToHostBuf[i].para[0]+"," + (int)m_ConsoleUdp.m_sToHostBuf[i].para[1] + "," 
+                        + (int)m_ConsoleUdp.m_sToHostBuf[i].para[2] + "," + (int)m_ConsoleUdp.m_sToHostBuf[i].para[3] + ","
+                        + (int)m_ConsoleUdp.m_sToHostBuf[i].para[4] + "," + (int)m_ConsoleUdp.m_sToHostBuf[i].para[5]
+                        );
+                }
+                else
+                {
+                    WritePfErrorContentToLog(i, ((Label)FindName("PF" + i + "State")).Content.ToString());
+                }
             }
         }
         #endregion
@@ -977,6 +1102,66 @@ namespace MainControl
             }
         } 
         #endregion
+        private void GameStateUiUpdate()
+        {
+            for(int i=0;i<MtUdp.DeviceAmount;i++)
+            {
+                switch(m_ConsoleUdp.m_sToHostBuf[i].nRev1)
+                {
+                    case 0:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Green;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "未开始";
+                        break;
+                    case 1:
+                    case 2:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Orange;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "比赛中";
+                        break;
+                    case 3:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Red;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "比赛结束";
+                        break;
+                    case 4:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Red;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "丧失资格";
+                        break;
+                    case 5:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Red;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "异常退出";
+                        break;
+                    case 6:
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Background = Brushes.Red;
+                        ((Label)FindName("PF" + (i + 1) + "GameState")).Content = "比赛未完成";
+                        break;
+                }
+                WriteGameStateToLog(i, ((Label)FindName("PF" + (i + 1) + "GameState")).Content.ToString());
+            }
+        }
+        private void IsActiveAutoEnd()
+        {
+            if ((Pf_IsCheckedFlag[0]|| Pf_IsCheckedFlag[1]|| Pf_IsCheckedFlag[2]|| Pf_IsCheckedFlag[3])
+                &&(false== m_RaceFinishedFlag)
+                &&(Pf_IsCheckedFlag[0] ?((((byte)(RaceState.RACESTATE_FINISHED)==m_ConsoleUdp.m_sToHostBuf[0].nRev1)|| ((byte)(RaceState.RACESTATE_DNF) == m_ConsoleUdp.m_sToHostBuf[0].nRev1))&&((byte)(DOF_state.dof_working)==m_ConsoleUdp.m_sToHostBuf[0].nDOFStatus)) : true)
+                && (Pf_IsCheckedFlag[1] ? ((((byte)(RaceState.RACESTATE_FINISHED) == m_ConsoleUdp.m_sToHostBuf[1].nRev1) || ((byte)(RaceState.RACESTATE_DNF) == m_ConsoleUdp.m_sToHostBuf[0].nRev1))&&((byte)(DOF_state.dof_working) == m_ConsoleUdp.m_sToHostBuf[1].nDOFStatus)) : true)
+                && (Pf_IsCheckedFlag[2] ? ((((byte)(RaceState.RACESTATE_FINISHED) == m_ConsoleUdp.m_sToHostBuf[2].nRev1) || ((byte)(RaceState.RACESTATE_DNF) == m_ConsoleUdp.m_sToHostBuf[1].nRev1))&&((byte)(DOF_state.dof_working) == m_ConsoleUdp.m_sToHostBuf[2].nDOFStatus)) : true)
+                && (Pf_IsCheckedFlag[3] ? ((((byte)(RaceState.RACESTATE_FINISHED) == m_ConsoleUdp.m_sToHostBuf[3].nRev1) || ((byte)(RaceState.RACESTATE_DNF) == m_ConsoleUdp.m_sToHostBuf[2].nRev1))&&((byte)(DOF_state.dof_working) == m_ConsoleUdp.m_sToHostBuf[3].nDOFStatus)) : true)
+                )
+            {
+                m_RaceFinishedFlag = true;
+                m_ActiveAutoEnd = true;
+            }
+            else if((Pf_IsCheckedFlag[0] || Pf_IsCheckedFlag[1] || Pf_IsCheckedFlag[2] || Pf_IsCheckedFlag[3])
+                && (true == m_RaceFinishedFlag)
+                && (Pf_IsCheckedFlag[0] ? (((byte)(RaceState.RACESTATE_FINISHED) != m_ConsoleUdp.m_sToHostBuf[0].nRev1)&&((byte)(RaceState.RACESTATE_DNF) != m_ConsoleUdp.m_sToHostBuf[0].nRev1)) : true)
+                && (Pf_IsCheckedFlag[1] ? (((byte)(RaceState.RACESTATE_FINISHED) != m_ConsoleUdp.m_sToHostBuf[1].nRev1) && ((byte)(RaceState.RACESTATE_DNF) != m_ConsoleUdp.m_sToHostBuf[1].nRev1)) : true)
+                && (Pf_IsCheckedFlag[2] ? (((byte)(RaceState.RACESTATE_FINISHED) != m_ConsoleUdp.m_sToHostBuf[2].nRev1) && ((byte)(RaceState.RACESTATE_DNF) != m_ConsoleUdp.m_sToHostBuf[2].nRev1)) : true)
+                && (Pf_IsCheckedFlag[3] ? (((byte)(RaceState.RACESTATE_FINISHED) != m_ConsoleUdp.m_sToHostBuf[3].nRev1) && ((byte)(RaceState.RACESTATE_DNF) != m_ConsoleUdp.m_sToHostBuf[3].nRev1)) : true)
+                )
+            {
+                m_RaceFinishedFlag = false;
+            }
+        }
+
         #region //硬件指示灯
         void HardwareErrorCheckAndErrorLightCtrl()
         {
@@ -1263,6 +1448,7 @@ namespace MainControl
                     ((Label)FindName("Car" + (i + 1) + "DoorState")).Background = Brushes.Yellow;
                     ((Button)FindName("BtnNum" + (i + 1) + "CarDoorControl")).IsEnabled = false;
                 }
+                WriteCarDoorStateToLog(i, ((Label)FindName("Car" + (i + 1) + "DoorState")).Content.ToString());
             }
         } 
         #endregion
@@ -1605,8 +1791,8 @@ namespace MainControl
         {
             if (LadderStatus.MOVING == ladderStatus)
             {
-                ((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).Content = m_LadderStatusContent[(int)ladderStatus];
-                ((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).IsEnabled = false;
+                //((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).Content = m_LadderStatusContent[(int)ladderStatus];
+                //((Button)FindName("BtnNum" + (index + 1) + "LadderControl")).IsEnabled = false;
             }
             else
             {
@@ -1747,17 +1933,7 @@ namespace MainControl
             }
         }
         #endregion
-        #region //出错弹窗
-        private MessageBoxResult MotusMessageBox(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
-        {
-            MessageBoxResult mbRet;
-            timer.Change(Timeout.Infinite, 10);
-            //MessageBox.Show(index + 1 + "号楼梯运动超时，请检查设备！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            mbRet=MessageBox.Show(messageBoxText, caption, button, icon);
-            timer.Change(0, 10);
-            return mbRet;
-        }
-        #endregion
+        
         #region //楼梯靠近平台
         const UInt32 LadderClosedMaxDelayCounter = 1000;
         UInt32[] LadderClosedDelayCounter = new UInt32[5] { 0,0,0,0,0};
@@ -1876,12 +2052,14 @@ namespace MainControl
         {
             if ((sender as Button).Content.Equals(BtnStartOrEndContent[0]))     //当前内容为“启动游戏体验”
             {
+                WriteButtonEventContentToLog(BtnStartOrEndContent[0]);
                 BtnEnd.Content = BtnStartOrEndContent[2];
                 (sender as Button).Content = BtnStartOrEndContent[1];              //当前内容为“体验开始中”
 
             }
             else if ((sender as Button).Content.Equals(BtnStartOrEndContent[2])) //当前内容为“结束游戏体验”
             {
+                WriteButtonEventContentToLog(BtnStartOrEndContent[2]);
                 BtnStart.Content = BtnStartOrEndContent[0];
                 (sender as Button).Content = BtnStartOrEndContent[3];            //当前内容为“体验结束中”
             }
@@ -2036,12 +2214,14 @@ namespace MainControl
         {
             if (BtnNum1LadderControl.Content.Equals(m_LadderStatusContent[0]))  //当前按钮显示内容为“靠近”平台时
             {
+                WriteEventContentToLog("单击1号滑梯按钮："+m_LadderStatusContent[0]);
                 m_LadderCtrlBtnStatus[0] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum1LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(0);
             }
             else
             {
+                WriteEventContentToLog("单击1号滑梯按钮：" + m_LadderStatusContent[1]);
                 m_LadderCtrlBtnStatus[0] = LadderCtrlBtnStatus.SETAWAY;
                 BtnNum1LadderControl.Content = m_LadderStatusContent[0];
                 ClearLadderAwayDelayCounter(0);
@@ -2052,12 +2232,14 @@ namespace MainControl
         {
             if (BtnNum2LadderControl.Content.Equals(m_LadderStatusContent[0]))  //当前按钮显示内容为“靠近”平台时
             {
+                WriteEventContentToLog("单击2号滑梯按钮：" + m_LadderStatusContent[0]);
                 m_LadderCtrlBtnStatus[1] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum2LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(1);
             }
             else
             {
+                WriteEventContentToLog("单击2号滑梯按钮：" + m_LadderStatusContent[1]);
                 m_LadderCtrlBtnStatus[1] = LadderCtrlBtnStatus.SETAWAY;
                 BtnNum2LadderControl.Content = m_LadderStatusContent[0];
                 ClearLadderAwayDelayCounter(1);
@@ -2068,12 +2250,14 @@ namespace MainControl
         {
             if (BtnNum3LadderControl.Content.Equals(m_LadderStatusContent[0]))  //当前按钮显示内容为“靠近”平台时
             {
+                WriteEventContentToLog("单击3号滑梯按钮：" + m_LadderStatusContent[0]);
                 m_LadderCtrlBtnStatus[2] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum3LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(2);
             }
             else
             {
+                WriteEventContentToLog("单击3号滑梯按钮：" + m_LadderStatusContent[1]);
                 m_LadderCtrlBtnStatus[2] = LadderCtrlBtnStatus.SETAWAY;
                 BtnNum3LadderControl.Content = m_LadderStatusContent[0];
                 ClearLadderAwayDelayCounter(2);
@@ -2084,12 +2268,14 @@ namespace MainControl
         {
             if (BtnNum4LadderControl.Content.Equals(m_LadderStatusContent[0]))  //当前按钮显示内容为“靠近”平台时
             {
+                WriteEventContentToLog("单击4号滑梯按钮：" + m_LadderStatusContent[0]);
                 m_LadderCtrlBtnStatus[3] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum4LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(3);
             }
             else
             {
+                WriteEventContentToLog("单击4号滑梯按钮：" + m_LadderStatusContent[1]);
                 m_LadderCtrlBtnStatus[3] = LadderCtrlBtnStatus.SETAWAY;
                 BtnNum4LadderControl.Content = m_LadderStatusContent[0];
                 ClearLadderAwayDelayCounter(3);
@@ -2100,12 +2286,14 @@ namespace MainControl
         {
             if (BtnNum5LadderControl.Content.Equals(m_LadderStatusContent[0]))  //当前按钮显示内容为“靠近”平台时
             {
+                WriteEventContentToLog("单击5号滑梯按钮：" + m_LadderStatusContent[0]);
                 m_LadderCtrlBtnStatus[4] = LadderCtrlBtnStatus.SETCLOSE;
                 BtnNum5LadderControl.Content = m_LadderStatusContent[1];
                 ClearLadderClosedDelayCounter(4);
             }
             else
             {
+                WriteEventContentToLog("单击5号滑梯按钮：" + m_LadderStatusContent[1]);
                 m_LadderCtrlBtnStatus[4] = LadderCtrlBtnStatus.SETAWAY;
                 BtnNum5LadderControl.Content = m_LadderStatusContent[0];
                 ClearLadderAwayDelayCounter(4);
@@ -2232,6 +2420,7 @@ namespace MainControl
         {
             if ((sender as Button).Content.Equals(BtnResetContent[0]))
             {
+                WriteButtonEventContentToLog(BtnStartOrEndContent[0]);
                 BtnStart.Content = BtnStartOrEndContent[0];
                 BtnStart.IsHitTestVisible = false;
                 BtnEnd.Content = BtnStartOrEndContent[2];
@@ -2268,6 +2457,8 @@ namespace MainControl
             {
                 OperateEndHandle();
             }
+            //m_LogWriter.Close();
+            Thread.Sleep(100);
             Application.Current.Shutdown();
         }
         /// <summary>
@@ -2322,7 +2513,7 @@ namespace MainControl
                 SetForegroundWindow(FindWindow(null, "MOTUS"));
                 Environment.Exit(0);
             }
-            Title = "穆特科技（武汉）股份有限公司）";
+            Title = "穆特科技（武汉）股份有限公司";
         }
         /// <summary>
         /// 清空相关数据；
@@ -2331,7 +2522,9 @@ namespace MainControl
         {
             BtnStart.Content = BtnStartOrEndContent[0];
             BtnEnd.Content = BtnStartOrEndContent[2];
-
+            EnableBtnEnd(false);
+            EnableBtnStart(false);
+            BtnReset.IsHitTestVisible = true;
             BtnInitOrWaitPassenger.IsHitTestVisible = false;
         }
         /// <summary>
@@ -2360,7 +2553,19 @@ namespace MainControl
                 RecoveryGbBorderBrushToDefault(GbPfsAndPlcStates);
             }
         }
-
+        #region //出错弹窗
+        private MessageBoxResult MotusMessageBox(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
+        {
+            MessageBoxResult mbRet;
+            timer.Change(Timeout.Infinite, 10);
+            //MessageBox.Show(index + 1 + "号楼梯运动超时，请检查设备！", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            WriteEventContentToLog(messageBoxText);
+            mbRet = MessageBox.Show(messageBoxText, caption, button, icon);
+            WriteEventContentToLog(mbRet.ToString());
+            timer.Change(0, 10);
+            return mbRet;
+        }
+        #endregion
         private void OperateEndHandle()
         {
             //关闭投影仪
@@ -2379,6 +2584,90 @@ namespace MainControl
             }
             m_ConsoleUdp.SendDataToPlc(m_ConsoleUdp.m_DataToPlc, m_ConsoleUdp.m_DataToPlc.Length, m_ConsoleUdp.m_PlcIpEndpoint);
             Thread.Sleep(5000);
+        }
+
+        private void WriteEventContentToLog(string logContent)
+        {
+            if(m_LogLastEventContent.Equals(logContent))
+            {
+
+            }
+            else
+            {
+                m_LogLastEventContent= logContent;
+                m_LogWriter.WriteLine(DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss:  ") + logContent);
+            }
+        }
+        private void WriteButtonEventContentToLog(string logContent)
+        {
+            if (m_LogLastButtonEventContent.Equals(logContent))
+            {
+
+            }
+            else
+            {
+                m_LogLastButtonEventContent = logContent;
+                m_LogWriter.WriteLine(DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss:  ") + "单击  "+logContent);
+            }
+        }
+        private void WritePfErrorContentToLog(int index,string logContent)
+        {
+            if (m_LogLastPfErrorContent[index].Equals(logContent))
+            {
+
+            }
+            else
+            {
+                m_LogLastPfErrorContent[index] = logContent;
+                m_LogWriter.WriteLine(DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss:  ") + (index+1)+"号设备-"+logContent);
+            }
+        }
+
+        private void WriteCarDoorStateToLog(int index, string logContent)
+        {
+            if (m_LogLastCarDoorState[index].Equals(logContent))
+            {
+
+            }
+            else
+            {
+                m_LogLastCarDoorState[index] = logContent;
+                m_LogWriter.WriteLine(DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss:  ") + (index + 1) + "号车门-" + logContent);
+            }
+        }
+        private void WriteGameStateToLog(int index, string logContent)
+        {
+            if (m_LogLastGameState[index].Equals(logContent))
+            {
+
+            }
+            else
+            {
+                m_LogLastGameState[index] = logContent;
+                m_LogWriter.WriteLine(DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss:  ") + (index + 1) + "号游戏状态-" + logContent);
+            }
+        }
+
+        private void CbPlatformsSelect_Click(object sender, RoutedEventArgs e)
+        {
+            WriteEventContentToLog((sender as CheckBox).Name +"  勾选状态："+ (sender as CheckBox).IsChecked.ToString());
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_QUERYENDSESSION)
+            {
+                OperateEndHandle();
+            }
+            return IntPtr.Zero;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //// 获得窗口句柄
+            IntPtr hwnd = new WindowInteropHelper(this).Handle;
+            //// 在Win32窗口中显示WPF的内容////接收窗口消息的处理程序实现（基于 System.Windows.Interop.HwndSourceHook 委托）
+            HwndSource.FromHwnd(hwnd).AddHook(new HwndSourceHook(WndProc));
         }
     }
 }

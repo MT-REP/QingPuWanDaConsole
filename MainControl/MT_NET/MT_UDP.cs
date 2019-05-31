@@ -89,6 +89,7 @@ namespace MainControl.MT_UDP
 
         public bool[] m_DeviceConnectState = new bool[deviceAmount] { false, false, false, false };
         public int[] m_DeviceConnectCheckDelay = new int[deviceAmount] { 0, 0, 0, 0 };
+        public const int NetMaxDelay =2000;
         public DataToDOF m_sToDOFBuf = new DataToDOF();
         public DataToHost[] m_sToHostBuf = new DataToHost[deviceAmount];                            //根据外部设备数量定义相应数据结构体
         public IPEndPoint m_CurRomateIpEndPoint = new IPEndPoint(0, 0);
@@ -164,14 +165,7 @@ namespace MainControl.MT_UDP
                     }
                     else
                     {
-                        if (m_DeviceConnectCheckDelay[i] > 1000)
-                        {
-                            m_DeviceConnectState[i] = false;
-                        }
-                        else
-                        {
-                            m_DeviceConnectCheckDelay[i]++;
-                        }
+                        
                     }
                 }
                 if ((m_AnyRemoteIpEndPoint.Equals(m_PlcIpEndpoint))&&(m_UdpReceiveBuf.Length == m_DataFromPlc.Length))
@@ -179,6 +173,7 @@ namespace MainControl.MT_UDP
                     Array.Copy(m_UdpReceiveBuf, m_DataFromPlc, m_DataFromPlc.Length);
                     //Array.Reverse(m_DataFromPlc);
                     m_PLCNetConnectCheckDelay = 0;
+                    //读取第一次PLC数据，保持相关状态，防止误动作；
                     if(m_PLCConnectState.Equals(PlcConnectStateContent[0]))
                     {
                         PlcDataInit(m_DataFromPlc);
@@ -187,18 +182,35 @@ namespace MainControl.MT_UDP
                 }
                 else
                 {
-                    if (m_PLCNetConnectCheckDelay > 2000)
-                    {
-                        m_PLCConnectState = PlcConnectStateContent[0];
-                    }
-                    else
-                    {
-                        m_PLCNetConnectCheckDelay++;
-                    }
+                    
                 }
             }
         } 
         #endregion
+
+        public void PfNetDelayCounter(byte index)
+        {
+            if (m_DeviceConnectCheckDelay[index] > NetMaxDelay)
+            {
+                m_DeviceConnectState[index] = false;
+            }
+            else
+            {
+                m_DeviceConnectCheckDelay[index]++;
+            }
+        }
+
+        public void PlcNetDelayCounter()
+        {
+            if (m_PLCNetConnectCheckDelay > NetMaxDelay)
+            {
+                m_PLCConnectState = PlcConnectStateContent[0];
+            }
+            else
+            {
+                m_PLCNetConnectCheckDelay++;
+            }
+        }
 
         #region //寻底，上升至中位
         /// <summary>
