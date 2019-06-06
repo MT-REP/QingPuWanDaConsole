@@ -47,6 +47,9 @@
                 <CheckBox x:Name="CbNum3LadderShieldCheck" Content="4号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="36"/>
                 <CheckBox x:Name="CbNum4LadderShieldCheck" Content="5号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="500" Canvas.Top="36"/>
                 <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click" Canvas.Left="488" Canvas.Top="72"/>
+                <Label Content="使能游戏控制：" Canvas.Left="2" Canvas.Top="55"/>
+                <CheckBox Content="DIY控制" Name="CbDiyCtrl" Canvas.Left="100" Canvas.Top="61"/>
+                <CheckBox Content="比赛控制" Name="CbRaceCtrl" Canvas.Left="200" Canvas.Top="61"/>
             </Canvas>
         </GroupBox>
         <GroupBox Header="错误代码：" HorizontalAlignment="Left" Height="153" Margin="30,234,0,0" VerticalAlignment="Top" Width="601">

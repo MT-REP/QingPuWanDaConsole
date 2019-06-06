@@ -11,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
+
+
 namespace MainControl.MT_UDP
 {
     #region //DOF_state枚举
@@ -45,6 +47,13 @@ namespace MainControl.MT_UDP
         S_CMD_GAMECTRL = 102,
     };
     #endregion
+    //GameControl枚举
+    public enum GameCtrl:byte
+    {
+        CMD_DIY_START,
+        CMD_RACE_START,
+        CMD_RACE_END
+    }
     #region //协议结构体定义
     [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct DataToDOF
@@ -78,10 +87,11 @@ namespace MainControl.MT_UDP
     #endregion
     public class MtUdp 
     {
+
         delegate double UdpReceiveHandler(IPEndPoint udpEndPoint);
         #region /*变量定义*/
         private const int deviceAmount = 4;
-
+        public const int MESSAGE_SIZE = 6;
         public static int DeviceAmount
         {
             get { return MtUdp.deviceAmount; }
@@ -95,6 +105,7 @@ namespace MainControl.MT_UDP
         public IPEndPoint m_CurRomateIpEndPoint = new IPEndPoint(0, 0);
         public IPEndPoint[] m_RemoteIpEndpoint = new IPEndPoint[deviceAmount];                      //根据外部设备数量定义地址数量
         public IPEndPoint m_PlcIpEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.120"), 5000);
+        public IPEndPoint m_GmCtrlSoftwareIpEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888);      //外方游戏控制软件地址及端口
         IPEndPoint m_LocalIPEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.130"), 10000);
         IPEndPoint m_AnyRemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         public byte[] m_UdpReceiveBuf;
@@ -106,6 +117,10 @@ namespace MainControl.MT_UDP
         public string m_PLCConnectState = PlcConnectStateContent[0];
         public byte[] m_DataFromPlc = new byte[8] {0x51,0x15,0x0F,0x00,0x00,0x00,0x00,0x00};
         public byte[] m_DataToPlc = new byte[5] {0x00,0x00,0x00,0x00,0x00};
+        public byte[] m_message=new byte[MESSAGE_SIZE] { (byte)'w', (byte)'a', (byte)'n', (byte)'d', (byte)'a', (byte)'?' };
+
+        public bool m_EnableDiyCtrl = false;
+        public bool m_EnableRaceCtrl = false;
         #endregion
         #region //Udp初始化
         public void UdpInit(int udpPort)
@@ -131,6 +146,12 @@ namespace MainControl.MT_UDP
                 //IPEndPoint localEP= new IPEndPoint(IPAddress.Parse("192.168.0.130"), udpPort);
                 m_listener = new UdpClient(10000); //new UdpClient(localEP);
                 m_listener.Client.Blocking = true;
+                //解决UDP发送数据时，对方程序未打开时出现：System.Net.Sockets.SocketException:“远程主机强迫关闭了一个现有的连接。”
+                uint IOC_IN = 0x80000000;
+                uint IOC_VENDOR = 0x18000000;
+                uint SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+                m_listener.Client.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
+
                 m_UdpDataProcess = new Thread(UdpDataProcess);
                 m_UdpDataProcess.IsBackground = true;
                 m_UdpDataProcess.Start();
@@ -332,17 +353,57 @@ namespace MainControl.MT_UDP
             //任意状态下检测到PLC网络断开，则不给平台发数据；
             if(m_PLCConnectState.Equals(PlcConnectStateContent[1]))
             {
-                return m_listener.Send(dgram, bytes, endPoint);
+                return MtUdpSend(dgram, bytes, endPoint);
             }
             else
             {
                 return -1;
             }
         }
+
+        //游戏控制指令
+        public void GmCtrlDiyStart()
+        {
+            if (true == m_EnableDiyCtrl)
+            {
+                m_message[5] = (byte)GameCtrl.CMD_DIY_START;
+                MtUdpSend(m_message, m_message.Length, m_GmCtrlSoftwareIpEndpoint);
+            }
+        }
+        public void GmCtrlRaceStart()
+        {
+            if(true==m_EnableRaceCtrl)
+            {
+                m_message[5] = (byte)GameCtrl.CMD_RACE_START;
+                MtUdpSend(m_message, m_message.Length, m_GmCtrlSoftwareIpEndpoint);
+            }
+        }
+        public void GmCtrlRaceEnd()
+        {
+            if (true == m_EnableRaceCtrl)
+            {
+                m_message[5] = (byte)GameCtrl.CMD_RACE_END;
+                MtUdpSend(m_message, m_message.Length, m_GmCtrlSoftwareIpEndpoint);
+            }
+        }
+
+        public int MtUdpSend(byte[] dgram, int bytes, IPEndPoint endPoint)
+        {
+            try
+            {
+                return m_listener.Send(dgram, bytes, endPoint);
+            }
+            catch (SocketException e)
+            {
+                return 0;
+            }
+            
+        }
+
         #region //发送数据到PLC
         public void SendDataToPlc(byte[] dgram, int bytes, IPEndPoint endPoint)
         {
-            m_listener.Send(dgram, bytes, endPoint);
+            MtUdpSend(dgram, bytes, endPoint);
         } 
         #endregion
         #region //结构体转字节数组
