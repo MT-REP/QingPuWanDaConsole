@@ -781,6 +781,10 @@ namespace MainControl
                     {
                         m_ConsoleUdp.DofToEmergency(m_ConsoleUdp.m_RemoteIpEndpoint[i]);
                     }
+                    for (byte i = 0; i < LADDER_AMOUNT; i++)
+                    {
+                        SetLadderAway(i, m_ConsoleUdp.m_DataToPlc);
+                    }
                     BtnEmerge.Content = "急停\r\n按下";
                     BtnEmerge.Background = Brushes.Red;
                     DataClearWhenEmergBtnPressed();
