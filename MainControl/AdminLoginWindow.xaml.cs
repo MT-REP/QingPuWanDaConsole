@@ -133,18 +133,6 @@ namespace MainControl
         {
             GameStartUpBtnDisplayFlag = true;
         }
-
-        private void ActiveMainWindowButton_Click(object sender, RoutedEventArgs e)
-        {
-            if((sender as Button).Content.Equals(ForceActiveBtnContent[0]))
-            {
-                (sender as Button).Content = ForceActiveBtnContent[1];
-            }
-            else
-            {
-                (sender as Button).Content = ForceActiveBtnContent[0];
-            }
-        }
         /// <summary>
         /// 基于平台返回数据，在管理员窗口显示错误代码
         /// </summary>

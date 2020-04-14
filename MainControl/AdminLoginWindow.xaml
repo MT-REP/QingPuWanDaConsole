@@ -6,7 +6,7 @@
          
         xmlns:local="clr-namespace:MainControl"
         mc:Ignorable="d"
-        Title="AdminLoginWindow" Height="448.538" Width="703.65">
+        Title="AdminLoginWindow" Height="437.338" Width="703.65">
     <Window.Resources>
         <local:DofInfCollection x:Key="DofInfCollectionKey" x:Name="dofInfCollection"/>
 
@@ -33,7 +33,7 @@
         </Grid.ColumnDefinitions>
 
         <Button x:Name="BtnDisplayGameStartupBtn" Content="显示游戏启动按钮" HorizontalAlignment="Left" Margin="596.8,459.59,0,0" VerticalAlignment="Top" Width="114.6" Click="BtnDisplayGameStartupBtn_Click" Visibility="Hidden" IsHitTestVisible="False"/>
-        <GroupBox Header="屏蔽勾选" HorizontalAlignment="Left" Height="120" Margin="30,30,0,0" VerticalAlignment="Top" Width="601">
+        <GroupBox Header="屏蔽勾选" HorizontalAlignment="Left" Height="103" Margin="30,30,0,0" VerticalAlignment="Top" Width="601">
             <Canvas>
                 <Label Content="门屏蔽选择：" HorizontalContentAlignment="Right" VerticalAlignment="Top" Canvas.Left="15" Canvas.Top="5"/>
                 <Label Content="滑梯屏蔽选择：" HorizontalContentAlignment="Right" VerticalAlignment="Top" Canvas.Top="31" Canvas.Left="2"/>
@@ -41,18 +41,16 @@
                 <CheckBox x:Name="CbNum1CarDoorShieldCheck" Content="2号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="200" Canvas.Top="10"/>
                 <CheckBox x:Name="CbNum2CarDoorShieldCheck" Content="3号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="300" Canvas.Top="10"/>
                 <CheckBox x:Name="CbNum3CarDoorShieldCheck" Content="4号车车门" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="10"/>
-                <CheckBox x:Name="CbNum0LadderShieldCheck" Content="1号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="36"/>
-                <CheckBox x:Name="CbNum1LadderShieldCheck" Content="2号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="200" Canvas.Top="36"/>
-                <CheckBox x:Name="CbNum2LadderShieldCheck" Content="3号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="300" Canvas.Top="36"/>
-                <CheckBox x:Name="CbNum3LadderShieldCheck" Content="4号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="36"/>
-                <CheckBox x:Name="CbNum4LadderShieldCheck" Content="5号滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="500" Canvas.Top="36"/>
-                <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click" Canvas.Left="488" Canvas.Top="72"/>
-                <Label Content="使能游戏控制：" Canvas.Left="2" Canvas.Top="55"/>
-                <CheckBox Content="DIY控制" Name="CbDiyCtrl" Canvas.Left="100" Canvas.Top="61"/>
-                <CheckBox Content="比赛控制" Name="CbRaceCtrl" Canvas.Left="200" Canvas.Top="61"/>
+                <CheckBox x:Name="CbNum0LadderShieldCheck" Content="1号车滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum1LadderShieldCheck" Content="2号车滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="200" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum2LadderShieldCheck" Content="3号车滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="300" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum3LadderShieldCheck" Content="4号车滑台" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="400" Canvas.Top="36"/>
+                <CheckBox x:Name="CbNum4LadderShieldCheck" Content="5号车滑台" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="500" Canvas.Top="36"/>
+                <Button x:Name="DefiniteNoCheck" Content="确定" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="DefiniteNoCheck_Click" Canvas.Left="488" Canvas.Top="56"/>
+
             </Canvas>
         </GroupBox>
-        <GroupBox Header="错误代码：" HorizontalAlignment="Left" Height="153" Margin="30,234,0,0" VerticalAlignment="Top" Width="601">
+        <GroupBox Header="错误代码：" HorizontalAlignment="Left" Height="153" Margin="30,227,0,0" VerticalAlignment="Top" Width="601">
             <Canvas>
                 <DockPanel Height="118" Canvas.Left="80" Canvas.Top="9" Width="502">
                     <TextBlock FontSize="14" Foreground="DarkSlateBlue" TextAlignment="Right"
@@ -78,17 +76,26 @@
 
             </Canvas>
         </GroupBox>
-        <GroupBox Header="特殊按钮" HorizontalAlignment="Left" Height="74" Margin="30,155,0,0" VerticalAlignment="Top" Width="582">
+        <GroupBox Header="使能功能区" HorizontalAlignment="Left" Height="84" Margin="30,138,0,0" VerticalAlignment="Top" Width="601">
             <Grid Margin="10,0,-2.4,-0.8">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="95*"/>
-                    <ColumnDefinition Width="86*"/>
-                    <ColumnDefinition Width="79*"/>
-                    <ColumnDefinition Width="78*"/>
-                    <ColumnDefinition Width="80*"/>
-                    <ColumnDefinition Width="142*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ActiveMainWindowButton" Content="强制激活主窗口按钮" HorizontalAlignment="Center" Margin="19.8,23,10.6,10" VerticalAlignment="Center" Click="ActiveMainWindowButton_Click" Grid.Column="5"/>
+                <Label Content="使能游戏控制：" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <CheckBox Content="DIY控制" Name="CbDiyCtrl" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <CheckBox Content="比赛控制" Name="CbRaceCtrl" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Label Content="激活按钮：" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <CheckBox Name="CbActiveMainControlButton" Content="强制激活&#xD;&#xA;主控按钮" Margin="0" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <CheckBox Name="CbActiveLadderControl" Content="激活滑梯&#xD;&#xA;控制按钮" Grid.ColumnSpan="1"  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <CheckBox Name="CbActiveProjectorControl" Content="激活投影&#xD;&#xA;控制按钮" Grid.Column="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Margin="0" Grid.Row="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             </Grid>
         </GroupBox>
     </Grid>

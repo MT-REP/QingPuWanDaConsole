@@ -318,10 +318,43 @@
                     <ColumnDefinition Width="70*"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="序号：" Style="{StaticResource Label_Header}" Grid.Column="0"/>
-                <Label Content="赛车1"  Grid.Column="1" Grid.Row="0"  Style="{StaticResource Label_Header}" />
-                <Label Content="赛车2"  Style="{StaticResource Label_Header}" Grid.Column="2" />
-                <Label Content="赛车3"  Style="{StaticResource Label_Header}" Grid.Column="3" />
-                <Label Content="赛车4"  Style="{StaticResource Label_Header}" Grid.Column="4" />
+                <Label Content="1号车"  Grid.Column="1" Grid.Row="0"  Style="{StaticResource Label_Header}" >
+                    <Label.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="Blue" Offset="1"/>
+                            <GradientStop Color="White"/>
+                            <GradientStop Color="White" Offset="0.883"/>
+                        </RadialGradientBrush>
+                    </Label.Background>
+                </Label>
+
+                <Label Content="2号车"  Style="{StaticResource Label_Header}" Grid.Column="2" >
+                    <Label.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="Yellow" Offset="1"/>
+                            <GradientStop Color="White"/>
+                            <GradientStop Color="White" Offset="0.883"/>
+                        </RadialGradientBrush>
+                    </Label.Background>
+                </Label>
+                <Label Content="3号车"  Style="{StaticResource Label_Header}" Grid.Column="3" >
+                    <Label.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="Purple" Offset="1"/>
+                            <GradientStop Color="White"/>
+                            <GradientStop Color="White" Offset="0.883"/>
+                        </RadialGradientBrush>
+                    </Label.Background>
+                </Label>
+                <Label Content="4号车"  Style="{StaticResource Label_Header}" Grid.Column="4" >
+                    <Label.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="Red" Offset="1"/>
+                            <GradientStop Color="White"/>
+                            <GradientStop Color="White" Offset="0.883"/>
+                        </RadialGradientBrush>
+                    </Label.Background>
+                </Label>
                 <Label Content="状态：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
                 <CheckBox x:Name="CbNum0Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="1" Click="CbPlatformsSelect_Click"/>
                 <CheckBox x:Name="CbNum1Platform" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ShowOnDisabled="True" Grid.Row="1" Grid.Column="2" Click="CbPlatformsSelect_Click"/>
@@ -335,7 +368,7 @@
         </Button>
         <Button x:Name="BtnEnd" Content="   结束&#xA;游戏体验" Tag="/Icon/Stop.png" HorizontalAlignment="Left" Margin="945,15.2,0,0" Grid.Row="1" VerticalAlignment="Top" Click="BtnStartOrEnd_Click" ToolTipService.ShowOnDisabled="True" Width="85" Height="85" Style="{DynamicResource ButtonStyleMainCtrl}">
         </Button>
-        <ToggleButton x:Name="BtnEmerge" Content="急停&#xD;&#xA;松开" Margin="880,234.4,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" IsHitTestVisible="False" Height="40" Style="{DynamicResource ToggleButtonStyleEmerge}">
+        <ToggleButton x:Name="BtnEmerge" Content="急停&#xD;&#xA;松开" Margin="880,234.4,0,0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" IsHitTestVisible="False" Height="40" Style="{DynamicResource ToggleButtonStyleEmerge}" Padding="1">
             <ToggleButton.Resources>
                 <Style x:Key="ToggleButtonStyleEmerge" TargetType="{x:Type ToggleButton}">
                     <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -393,11 +426,11 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Content="序号：" Style="{StaticResource Label_Header}"/>
-                <Label Content="平台1"  Style="{StaticResource Label_Header}" Grid.Column="1" />
-                <Label Content="平台2"  Style="{StaticResource Label_Header}" Grid.Column="2" />
-                <Label Content="平台3"  Style="{StaticResource Label_Header}" Grid.Column="3" />
-                <Label Content="平台4"  Style="{StaticResource Label_Header}" Grid.Column="4" />
-                <Label Content="PLC网络" Style="{StaticResource Label_Header}" Grid.Column="5" />
+                <Label Content="1号平台"  Style="{StaticResource Label_Header}" Grid.Column="1" />
+                <Label Content="2号平台"  Style="{StaticResource Label_Header}" Grid.Column="2" />
+                <Label Content="3号平台"  Style="{StaticResource Label_Header}" Grid.Column="3" />
+                <Label Content="4号平台"  Style="{StaticResource Label_Header}" Grid.Column="4" />
+                <Label Content="PLC网络"  Style="{StaticResource Label_Header}" Grid.Column="5" />
 
                 <Label Content="平台：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
                 <Label x:Name="PF0State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" FontWeight="Normal" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
@@ -405,7 +438,7 @@
                 <Label x:Name="PF2State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PF3State" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PlcState" Content="断开" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
-                
+
                 <Label Content="游戏：" Style="{StaticResource Label_Header}" Grid.Row="2" Margin="0"/>
                 <Label x:Name="PF1GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="PF2GameState" Content="未开始" BorderBrush="#FFE51111" OpacityMask="#FFE50E0E" Style="{StaticResource Lable_PfStateDisplay}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
@@ -429,25 +462,28 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Content="序号：" Style="{StaticResource Label_Header}"/>
-                <Label Content="1号"  Style="{StaticResource Label_Header}" Grid.Column="1"/>
-                <Label Content="2号"  Style="{StaticResource Label_Header}" Grid.Column="2"/>
-                <Label Content="3号"  Style="{StaticResource Label_Header}" Grid.Column="3"/>
-                <Label Content="4号"  Style="{StaticResource Label_Header}" Grid.Column="4"/>
-                <Label Content="5号"  Style="{StaticResource Label_Header}" Grid.Column="5"/>
+                <Label Content="1号车&#xD;&#xA;左右滑梯"  Style="{StaticResource Label_Header}" Grid.Column="1"/>
+                <Label Content="2号车&#xD;&#xA;左右滑梯"  Style="{StaticResource Label_Header}" Grid.Column="2"/>
+                <Label Content="3号车&#xD;&#xA;左右滑梯"  Style="{StaticResource Label_Header}" Grid.Column="3"/>
+                <Label Content="4号车&#xD;&#xA;左右滑梯"  Style="{StaticResource Label_Header}" Grid.Column="4"/>
+                <Label Content="5号"  Style="{StaticResource Label_Header}" Grid.Column="5" Visibility="Hidden"/>
+                <Label Content="所有&#xD;&#xA;滑梯"  Style="{StaticResource Label_Header}" Grid.Column="5"/>
 
                 <Label Content="滑梯&#xA;状态：" Style="{StaticResource Label_Header}" Grid.Row="1"/>
                 <Label x:Name="Ladder1StatusDisplay" Content="远离"  Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="Ladder2StatusDisplay" Content="远离"  Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="Ladder3StatusDisplay" Content="远离"  Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
                 <Label x:Name="Ladder4StatusDisplay" Content="远离"  Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
-                <Label x:Name="Ladder5StatusDisplay" Content="远离"  Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
+                <Label x:Name="Ladder5StatusDisplay" Content="远离" Visibility="Hidden" Style="{StaticResource Label_StatusDisplay}" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Template="{DynamicResource LabelControlStateDisplay}"/>
 
                 <Label Content="楼梯&#xA;控制：" Style="{StaticResource Label_Header}" Grid.Row="2"/>
-                <Button x:Name="BtnNum1LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum1LadderControl_Click" Width="Auto" Margin="0"/>
-                <Button x:Name="BtnNum2LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum2LadderControl_Click" Width="Auto" Margin="0"/>
-                <Button x:Name="BtnNum3LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum3LadderControl_Click" Width="Auto" Margin="0"/>
-                <Button x:Name="BtnNum4LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum4LadderControl_Click" Width="Auto" Margin="0"/>
-                <Button x:Name="BtnNum5LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum5LadderControl_Click" Width="Auto" Margin="0"/>
+                <Button x:Name="BtnNum1LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum1LadderControl_Click" Width="Auto" Margin="0" IsHitTestVisible="False"/>
+                <Button x:Name="BtnNum2LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum2LadderControl_Click" Width="Auto" Margin="0" IsHitTestVisible="False"/>
+                <Button x:Name="BtnNum3LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum3LadderControl_Click" Width="Auto" Margin="0" IsHitTestVisible="False"/>
+                <Button x:Name="BtnNum4LadderControl" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum4LadderControl_Click" Width="Auto" Margin="0" IsHitTestVisible="False"/>
+                <Button x:Name="BtnNum5LadderControl" Content="远离" Visibility="Hidden" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="BtnNum5LadderControl_Click" Width="Auto" Margin="0" IsHitTestVisible="False"/>
+                <Button x:Name="AllLadderAway" Content="远离" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Margin="9.6,18.4,40.8,19"  Click="AllLadderAway_Click"/>
+                <Button x:Name="AllLadderClose" Content="靠近" Style="{StaticResource Button_LadderControl}" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Margin="47.6,18.4,2.8,19" Click="AllLadderClose_Click"/>
 
                 <Button x:Name="BtnStartUpPF1Game" Visibility="Hidden" Content="启动平台1游戏" HorizontalAlignment="Left" Margin="547.583,305,-20.2,0" VerticalAlignment="Top" Click="BtnStartUpPF1Game_Click" Grid.Column="1"/>
                 <Button x:Name="BtnStartUpPF2Game" Visibility="Hidden" Content="启动平台2游戏" HorizontalAlignment="Left" Margin="648.583,305,-121.2,0" VerticalAlignment="Top" Click="BtnStartUpPF2Game_Click" Grid.Column="1"/>
@@ -668,6 +704,7 @@
             </Canvas>
         </GroupBox>
         <Button x:Name="BtnReset" Content="   复位" Tag="/Icon/Reset.png" HorizontalAlignment="Left" Margin="860,131.4,0,0" Grid.Row="1" VerticalAlignment="Top" Click="BtnReset_Click" ToolTipService.ShowOnDisabled="True" Width="85" Height="85" Style="{DynamicResource ButtonStyleMainCtrl}"/>
+        
 
 
     </Grid>
